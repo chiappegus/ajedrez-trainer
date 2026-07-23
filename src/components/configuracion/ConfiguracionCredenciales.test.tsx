@@ -1,16 +1,18 @@
 /**
  * Tests unitarios para ConfiguracionCredenciales
  * Feature: lichess-game-analysis
- * Valida: Requisitos 0.1.2, 0.1.3, 0.1.4, 0.1.5, 0.1.6, 0.1.7
+ * Valida: Requisitos 0.1.2, 0.1.3, 0.1.4, 0.1.5, 0.1.6, 0.1.7, 0.3.1, 0.3.2, 0.3.3
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ConfiguracionCredenciales } from './ConfiguracionCredenciales';
 import { GestorCredenciales } from '../../services/credenciales/GestorCredenciales';
+import { ClienteLichess } from '../../services/lichess/ClienteLichess';
 
-// Mock de GestorCredenciales
+// Mock de GestorCredenciales y ClienteLichess
 vi.mock('../../services/credenciales/GestorCredenciales');
+vi.mock('../../services/lichess/ClienteLichess');
 
 describe('ConfiguracionCredenciales', () => {
   beforeEach(() => {
@@ -49,9 +51,10 @@ describe('ConfiguracionCredenciales', () => {
     expect(linkGroq).toHaveAttribute('target', '_blank');
   });
 
-  it('muestra estado "Guardando..." mientras procesa', async () => {
+  it('muestra estado "Validando token..." mientras procesa', async () => {
     vi.mocked(GestorCredenciales).prototype.validarCredenciales = vi.fn(() => ({ válido: true }));
     vi.mocked(GestorCredenciales).prototype.guardarCredenciales = vi.fn();
+    vi.mocked(ClienteLichess).prototype.validarToken = vi.fn(async () => true);
 
     render(<ConfiguracionCredenciales />);
 
@@ -78,7 +81,7 @@ describe('ConfiguracionCredenciales', () => {
 
     // Verificar que se guardaron las credenciales
     await waitFor(() => {
-      expect(screen.getByRole('status')).toHaveTextContent(/credenciales guardadas exitosamente/i);
+      expect(screen.getByRole('status')).toHaveTextContent(/token validado correctamente/i);
     });
   });
 
@@ -116,6 +119,7 @@ describe('ConfiguracionCredenciales', () => {
   it('muestra mensaje de éxito cuando se guardan las credenciales', async () => {
     vi.mocked(GestorCredenciales).prototype.validarCredenciales = vi.fn(() => ({ válido: true }));
     vi.mocked(GestorCredenciales).prototype.guardarCredenciales = vi.fn();
+    vi.mocked(ClienteLichess).prototype.validarToken = vi.fn(async () => true);
 
     render(<ConfiguracionCredenciales />);
 
@@ -136,8 +140,154 @@ describe('ConfiguracionCredenciales', () => {
 
     // Verificar mensaje de éxito
     await waitFor(() => {
-      expect(screen.getByRole('status')).toHaveTextContent(/credenciales guardadas exitosamente/i);
+      expect(screen.getByRole('status')).toHaveTextContent(/token validado correctamente/i);
     });
+  });
+
+  it('muestra "Validando token..." mientras valida el token con Lichess', async () => {
+    vi.mocked(GestorCredenciales).prototype.validarCredenciales = vi.fn(() => ({ válido: true }));
+    vi.mocked(GestorCredenciales).prototype.guardarCredenciales = vi.fn();
+    
+    // Mock que tarda un poco en resolver
+    vi.mocked(ClienteLichess).prototype.validarToken = vi.fn(
+      () => new Promise(resolve => setTimeout(() => resolve(true), 100))
+    );
+
+    render(<ConfiguracionCredenciales />);
+
+    // Rellenar campos
+    fireEvent.change(screen.getByLabelText(/nombre de usuario de lichess/i), {
+      target: { value: 'testuser' }
+    });
+    fireEvent.change(screen.getByLabelText(/token de api personal de lichess/i), {
+      target: { value: 'lip_testtoken' }
+    });
+    fireEvent.change(screen.getByLabelText(/api key de groq/i), {
+      target: { value: 'gsk_testkey' }
+    });
+
+    // Submit del formulario
+    const botonGuardar = screen.getByRole('button', { name: /guardar credenciales/i });
+    const form = botonGuardar.closest('form');
+    fireEvent.submit(form!);
+
+    // Verificar que muestra "Validando token..."
+    await waitFor(() => {
+      expect(botonGuardar).toHaveTextContent(/validando token/i);
+      expect(botonGuardar).toBeDisabled();
+    });
+
+    // Verificar que eventualmente muestra éxito
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent(/token validado correctamente/i);
+    });
+  });
+
+  it('muestra mensaje de error cuando el token de Lichess es inválido', async () => {
+    vi.mocked(GestorCredenciales).prototype.validarCredenciales = vi.fn(() => ({ válido: true }));
+    vi.mocked(ClienteLichess).prototype.validarToken = vi.fn(async () => false);
+
+    render(<ConfiguracionCredenciales />);
+
+    // Rellenar campos
+    fireEvent.change(screen.getByLabelText(/nombre de usuario de lichess/i), {
+      target: { value: 'testuser' }
+    });
+    fireEvent.change(screen.getByLabelText(/token de api personal de lichess/i), {
+      target: { value: 'lip_invalidtoken' }
+    });
+    fireEvent.change(screen.getByLabelText(/api key de groq/i), {
+      target: { value: 'gsk_testkey' }
+    });
+
+    // Submit del formulario
+    const form = screen.getByRole('button', { name: /guardar credenciales/i }).closest('form');
+    fireEvent.submit(form!);
+
+    // Verificar mensaje de error
+    await waitFor(() => {
+      const alert = screen.getByRole('alert');
+      expect(alert).toHaveTextContent(/token de lichess es inválido o ha expirado/i);
+    });
+  });
+
+  it('muestra mensaje de error cuando hay problemas de red al validar token', async () => {
+    vi.mocked(GestorCredenciales).prototype.validarCredenciales = vi.fn(() => ({ válido: true }));
+    vi.mocked(ClienteLichess).prototype.validarToken = vi.fn(async () => {
+      throw new Error('Error de red al validar token');
+    });
+
+    render(<ConfiguracionCredenciales />);
+
+    // Rellenar campos
+    fireEvent.change(screen.getByLabelText(/nombre de usuario de lichess/i), {
+      target: { value: 'testuser' }
+    });
+    fireEvent.change(screen.getByLabelText(/token de api personal de lichess/i), {
+      target: { value: 'lip_testtoken' }
+    });
+    fireEvent.change(screen.getByLabelText(/api key de groq/i), {
+      target: { value: 'gsk_testkey' }
+    });
+
+    // Submit del formulario
+    const form = screen.getByRole('button', { name: /guardar credenciales/i }).closest('form');
+    fireEvent.submit(form!);
+
+    // Verificar mensaje de error
+    await waitFor(() => {
+      const alert = screen.getByRole('alert');
+      expect(alert).toHaveTextContent(/no se pudo conectar con lichess/i);
+    });
+  });
+
+  it('permite corregir el token sin perder los otros campos cuando falla la validación', async () => {
+    vi.mocked(GestorCredenciales).prototype.validarCredenciales = vi.fn(() => ({ válido: true }));
+    
+    // Primera vez: token inválido
+    const mockValidarToken = vi.fn()
+      .mockResolvedValueOnce(false)  // Primera llamada falla
+      .mockResolvedValueOnce(true);  // Segunda llamada tiene éxito
+    
+    vi.mocked(ClienteLichess).prototype.validarToken = mockValidarToken;
+    vi.mocked(GestorCredenciales).prototype.guardarCredenciales = vi.fn();
+
+    render(<ConfiguracionCredenciales />);
+
+    // Rellenar campos inicialmente
+    const inputUsuario = screen.getByLabelText(/nombre de usuario de lichess/i);
+    const inputToken = screen.getByLabelText(/token de api personal de lichess/i);
+    const inputGroq = screen.getByLabelText(/api key de groq/i);
+    
+    fireEvent.change(inputUsuario, { target: { value: 'testuser' } });
+    fireEvent.change(inputToken, { target: { value: 'lip_invalidtoken' } });
+    fireEvent.change(inputGroq, { target: { value: 'gsk_testkey' } });
+
+    // Primer intento - falla
+    const form = screen.getByRole('button', { name: /guardar credenciales/i }).closest('form');
+    fireEvent.submit(form!);
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/token de lichess es inválido/i);
+    });
+
+    // Verificar que los campos mantienen sus valores
+    expect(inputUsuario).toHaveValue('testuser');
+    expect(inputToken).toHaveValue('lip_invalidtoken');
+    expect(inputGroq).toHaveValue('gsk_testkey');
+
+    // Corregir solo el token
+    fireEvent.change(inputToken, { target: { value: 'lip_validtoken' } });
+
+    // Segundo intento - tiene éxito
+    fireEvent.submit(form!);
+
+    await waitFor(() => {
+      expect(screen.getByRole('status')).toHaveTextContent(/token validado correctamente/i);
+    });
+
+    // Verificar que se llamó guardarCredenciales
+    expect(vi.mocked(GestorCredenciales).prototype.guardarCredenciales).toHaveBeenCalled();
   });
 
   it('limpia las credenciales cuando se hace clic en limpiar', async () => {
@@ -163,6 +313,7 @@ describe('ConfiguracionCredenciales', () => {
     
     vi.mocked(GestorCredenciales).prototype.validarCredenciales = vi.fn(() => ({ válido: true }));
     vi.mocked(GestorCredenciales).prototype.guardarCredenciales = vi.fn();
+    vi.mocked(ClienteLichess).prototype.validarToken = vi.fn(async () => true);
 
     render(<ConfiguracionCredenciales onGuardadoExitoso={mockCallback} />);
 
@@ -181,7 +332,7 @@ describe('ConfiguracionCredenciales', () => {
     const form = screen.getByRole('button', { name: /guardar credenciales/i }).closest('form');
     fireEvent.submit(form!);
 
-    // Verificar que el callback es llamado después de 1 segundo
+    // Verificar que el callback es llamado después de 1.5 segundos
     await waitFor(() => {
       expect(mockCallback).toHaveBeenCalled();
     }, { timeout: 2000 });

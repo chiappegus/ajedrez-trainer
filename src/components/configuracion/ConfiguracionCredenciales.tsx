@@ -1,11 +1,12 @@
 /**
  * Componente de configuración de credenciales
  * Feature: lichess-game-analysis
- * Valida: Requisitos 0.1.2, 0.1.3, 0.1.4, 0.1.5, 0.1.6, 0.1.7, 0.4.1, 0.4.2
+ * Valida: Requisitos 0.1.2, 0.1.3, 0.1.4, 0.1.5, 0.1.6, 0.1.7, 0.3.1, 0.3.2, 0.3.3, 0.4.1, 0.4.2
  */
 
 import { useState } from 'react';
 import { GestorCredenciales } from '../../services/credenciales/GestorCredenciales';
+import { ClienteLichess } from '../../services/lichess/ClienteLichess';
 import type { Credenciales } from '../../types/credenciales';
 import './ConfiguracionCredenciales.css';
 
@@ -59,20 +60,42 @@ export function ConfiguracionCredenciales({ onGuardadoExitoso }: ConfiguracionCr
         return;
       }
 
+      // Validar token de Lichess con la API
+      const clienteLichess = new ClienteLichess(credenciales.tokenLichess, credenciales.nombreUsuario);
+      
+      const tokenEsValido = await clienteLichess.validarToken();
+      
+      if (!tokenEsValido) {
+        setMensajeError('El token de Lichess es inválido o ha expirado. Por favor verifica que lo hayas copiado correctamente.');
+        setValidando(false);
+        return;
+      }
+
       // Guardar credenciales
       gestorCredenciales.guardarCredenciales(credenciales);
       
       // Mostrar mensaje de éxito
-      setMensajeExito('Credenciales guardadas exitosamente');
+      setMensajeExito('Token validado correctamente. Credenciales guardadas exitosamente.');
       
       // Llamar al callback si existe
       if (onGuardadoExitoso) {
         setTimeout(() => {
           onGuardadoExitoso();
-        }, 1000);
+        }, 1500);
       }
     } catch (error) {
-      setMensajeError(error instanceof Error ? error.message : 'Error al guardar las credenciales');
+      if (error instanceof Error) {
+        // Manejar errores específicos de la validación del token
+        if (error.message.includes('conexión') || error.message.includes('red')) {
+          setMensajeError('No se pudo conectar con Lichess. Verifica tu conexión a internet e intenta de nuevo.');
+        } else if (error.message.includes('validación del token tardó')) {
+          setMensajeError('La validación del token tardó demasiado. Verifica tu conexión e intenta de nuevo.');
+        } else {
+          setMensajeError(error.message);
+        }
+      } else {
+        setMensajeError('Error inesperado al validar las credenciales');
+      }
     } finally {
       setValidando(false);
     }
@@ -191,7 +214,7 @@ export function ConfiguracionCredenciales({ onGuardadoExitoso }: ConfiguracionCr
             className="btn btn-primary"
             disabled={validando}
           >
-            {validando ? 'Guardando...' : 'Guardar credenciales'}
+            {validando ? 'Validando token...' : 'Guardar credenciales'}
           </button>
 
           <button
