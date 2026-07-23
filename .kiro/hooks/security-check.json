@@ -1,0 +1,12 @@
+{
+  "version": "v1",
+  "hooks": [{
+    "name": "Verificar Contenido Sensible en Archivos",
+    "trigger": "PostFileCreate",
+    "matcher": "\\.(ts|tsx|js|jsx|json|env|md)$",
+    "action": {
+      "type": "command",
+      "command": "node .kiro/hooks/security-check.js"
+    }
+  }]
+}
