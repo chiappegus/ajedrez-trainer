@@ -1,0 +1,181 @@
+/**
+ * Cliente para comunicación con la API pública de Lichess
+ * Feature: lichess-game-analysis
+ * Valida: Requisitos 1.1, 1.7
+ */
+
+/**
+ * Información de cuenta de usuario de Lichess
+ */
+export interface CuentaLichess {
+  /** Identificador único del usuario */
+  id: string;
+  /** Nombre de usuario */
+  username: string;
+  /** Ratings por categoría de juego */
+  perfs: Record<string, { rating: number }>;
+  /** Timestamp de creación de cuenta */
+  createdAt: number;
+}
+
+/**
+ * URL base de la API de Lichess
+ */
+const LICHESS_BASE_URL = 'https://lichess.org';
+
+/**
+ * Endpoints de la API de Lichess utilizados
+ */
+const ENDPOINTS = {
+  /** Endpoint para obtener información de cuenta del usuario autenticado */
+  cuenta: '/api/account',
+  /** 
+   * Endpoint para obtener partidas de un usuario específico
+   * @param username - Nombre de usuario de Lichess
+   */
+  partidasUsuario: (username: string) => `/api/games/user/${username}`,
+};
+
+/**
+ * Cliente para comunicación con la API pública de Lichess usando Fetch API nativa.
+ * Permite validar tokens y obtener partidas del usuario autenticado.
+ * 
+ * @example
+ * ```typescript
+ * const cliente = new ClienteLichess('lip_abc123def456');
+ * const esValido = await cliente.validarToken();
+ * if (esValido) {
+ *   const pgn = await cliente.obtenerÚltimaPartida('usuario123');
+ * }
+ * ```
+ */
+export class ClienteLichess {
+  private token: string;
+  private nombreUsuario: string;
+
+  /**
+   * Crea una nueva instancia del cliente de Lichess
+   * 
+   * @param token - Token de API Personal de Lichess (debe empezar con 'lip_')
+   * @param nombreUsuario - Nombre de usuario de Lichess (opcional, usado para obtener partidas)
+   */
+  constructor(token: string, nombreUsuario?: string) {
+    this.token = token;
+    this.nombreUsuario = nombreUsuario || '';
+  }
+
+  /**
+   * Valida el token de API realizando una petición de prueba a /api/account
+   * 
+   * @returns `true` si el token es válido, `false` en caso contrario
+   * @throws Error si hay problemas de red no relacionados con autenticación
+   */
+  async validarToken(): Promise<boolean> {
+    try {
+      const url = `${LICHESS_BASE_URL}${ENDPOINTS.cuenta}`;
+      
+      const respuesta = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+        },
+        signal: AbortSignal.timeout(5000), // Timeout de 5 segundos
+      });
+
+      return respuesta.ok;
+    } catch (error) {
+      // Si es timeout o error de red, lanzar error descriptivo
+      if (error instanceof Error && error.name === 'TimeoutError') {
+        throw new Error('La validación del token tardó demasiado. Verifica tu conexión.');
+      }
+      throw new Error('Error de red al validar token');
+    }
+  }
+
+  /**
+   * Obtiene la información de cuenta del usuario autenticado
+   * 
+   * @returns Información de la cuenta incluyendo username, ratings y fecha de creación
+   * @throws Error si el token es inválido o hay problemas de red
+   */
+  async obtenerCuentaUsuario(): Promise<CuentaLichess> {
+    const url = `${LICHESS_BASE_URL}${ENDPOINTS.cuenta}`;
+
+    const respuesta = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!respuesta.ok) {
+      if (respuesta.status === 401) {
+        throw new Error('Token de API inválido o expirado');
+      }
+      throw new Error(`Error de API de Lichess: ${respuesta.status}`);
+    }
+
+    return respuesta.json();
+  }
+
+  /**
+   * Obtiene la última partida del usuario en formato PGN
+   * 
+   * @param nombreUsuario - Nombre de usuario de Lichess (opcional, usa el del constructor si no se proporciona)
+   * @returns String PGN de la partida más reciente
+   * @throws Error si el usuario no existe, no tiene partidas, o hay problemas de red
+   * 
+   * @example
+   * ```typescript
+   * const pgn = await cliente.obtenerÚltimaPartida('hikaru');
+   * // Retorna: "1. e4 e5 2. Nf3 Nc6 ..."
+   * ```
+   */
+  async obtenerÚltimaPartida(nombreUsuario?: string): Promise<string> {
+    const usuario = nombreUsuario || this.nombreUsuario;
+    
+    if (!usuario) {
+      throw new Error('Nombre de usuario no proporcionado');
+    }
+
+    const url = `${LICHESS_BASE_URL}${ENDPOINTS.partidasUsuario(usuario)}`;
+
+    const respuesta = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${this.token}`,
+        'Accept': 'application/x-ndjson', // NDJSON format
+      },
+      signal: AbortSignal.timeout(10000), // 10 segundos timeout
+    });
+
+    if (!respuesta.ok) {
+      if (respuesta.status === 404) {
+        throw new Error('Nombre de usuario no encontrado');
+      }
+      if (respuesta.status === 401) {
+        throw new Error('Token de API inválido o expirado');
+      }
+      throw new Error(`Error de API de Lichess: ${respuesta.status}`);
+    }
+
+    const textoCompleto = await respuesta.text();
+
+    // NDJSON: cada línea es un JSON de partida
+    const líneas = textoCompleto.trim().split('\n').filter(linea => linea.length > 0);
+
+    if (líneas.length === 0) {
+      throw new Error('No se encontraron partidas para este usuario');
+    }
+
+    // Primera línea es la partida más reciente
+    const partidaJSON = JSON.parse(líneas[0]);
+    
+    if (!partidaJSON.pgn) {
+      throw new Error('La partida no contiene datos PGN');
+    }
+
+    return partidaJSON.pgn;
+  }
+}

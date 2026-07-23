@@ -5,6 +5,12 @@
  */
 
 /**
+ * Importar tipos que se usan en las interfaces pero están definidos en otros archivos
+ */
+import type { Partida } from './partida';
+import type { ErrorDetectado, EstadísticasAnálisis } from './error';
+
+/**
  * Evaluación completa de una posición de ajedrez por Stockfish
  */
 export interface Evaluación {
@@ -42,8 +48,3 @@ export interface ResultadoAnálisis {
   estadísticas: EstadísticasAnálisis;
 }
 
-/**
- * Importar tipos que se usan en las interfaces pero están definidos en otros archivos
- */
-import type { Partida, Jugada } from './partida';
-import type { ErrorDetectado, EstadísticasAnálisis } from './error';
