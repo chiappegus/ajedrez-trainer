@@ -10,13 +10,15 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:lichess": "node test-lichess-api.js"
+    "test:lichess": "node test-lichess-api.js",
+    "copy-stockfish": "node -e \"require('fs').copyFileSync('node_modules/stockfish.js/stockfish.js', 'public/stockfish.js'); require('fs').copyFileSync('node_modules/stockfish.js/stockfish.wasm', 'public/stockfish.wasm'); require('fs').copyFileSync('node_modules/stockfish.js/stockfish.wasm.js', 'public/stockfish.wasm.js'); console.log('✅ Archivos Stockfish copiados a public/')\""
   },
   "dependencies": {
     "chess.js": "^1.4.0",
     "react": "^19.2.7",
     "react-chessboard": "^5.10.0",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "stockfish.js": "^10.0.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.0",

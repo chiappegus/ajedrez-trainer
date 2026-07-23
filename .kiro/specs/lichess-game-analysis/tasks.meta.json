@@ -279,6 +279,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774477710
+      },
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775519819
+      },
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775632408
       }
     ],
     "7.2 Generar posiciones FEN para cada jugada": [
@@ -291,6 +301,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774478034
+      },
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775638789
       }
     ],
     "7.3 Implementar método `serializar(partida: Partida): string`": [
@@ -303,6 +318,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774478369
+      },
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775639967
       }
     ],
     "7.4 Implementar manejo de errores en parser": [
@@ -315,6 +335,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774478698
+      },
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775640906
       }
     ],
     "8. Checkpoint - Verificar parsing y obtención de partidas": [
@@ -339,6 +364,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774479343
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775742797
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776341437
       }
     ],
     "9.2 Crear Web Worker para Stockfish": [
@@ -351,6 +386,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774479674
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775743587
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776342176
       }
     ],
     "9.3 Crear clase `MotorStockfish` (wrapper)": [
@@ -363,6 +408,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774480010
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776351022
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776673621
       }
     ],
     "9.4 Implementar método `analizarPosición()`": [
@@ -375,6 +430,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774480345
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776696274
       }
     ],
     "9.5 Implementar conversión de evaluaciones UCI a centipawns normalizados": [
@@ -387,6 +447,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774480683
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776697022
       }
     ],
     "9.6 Implementar conversión de mejor jugada UCI a SAN": [
@@ -399,6 +464,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774481002
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776697903
       }
     ],
     "10.1 Crear clase `EvaluadorJugadas`": [
@@ -411,6 +481,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774481327
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776717454
       }
     ],
     "10.2 Implementar método `evaluarPosición()`": [
@@ -423,6 +498,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774481650
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776749592
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776750532
       }
     ],
     "10.3 Implementar método `evaluarSecuencia()`": [
@@ -435,6 +520,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774481996
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776751461
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776752130
       }
     ],
     "10.4 Implementar caché de evaluaciones para optimización": [
@@ -447,6 +542,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774482793
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776753223
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777179834
       }
     ],
     "11. Checkpoint - Verificar motor de análisis": [
@@ -459,6 +564,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774483222
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777206809
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777207557
       }
     ],
     "12.1 Crear clase `DetectorErrores`": [
@@ -471,6 +586,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774484299
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777208374
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777209122
       }
     ],
     "12.2 Implementar cálculo de cambio de evaluación según turno": [
@@ -483,6 +608,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774485014
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777209870
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777210730
       }
     ],
     "12.3 Implementar construcción de objeto `ErrorDetectado`": [
@@ -495,6 +630,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774485635
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777211801
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777212472
       }
     ],
     "12.4 Implementar filtrado de primeras 3 jugadas": [
@@ -507,6 +652,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774486136
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777213222
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777214073
       }
     ],
     "12.5 Implementar distinción de errores por color": [
@@ -519,6 +674,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774487492
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777214964
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777215688
       }
     ],
     "13. Checkpoint - Verificar detección de errores": [
@@ -531,6 +696,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774488515
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777237131
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777237769
       }
     ],
     "14.1 Crear clase `ClienteGroq`": [
@@ -543,6 +718,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774489512
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777238615
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777239713
       }
     ],
     "14.2 Implementar método `chatCompletion()`": [
@@ -555,6 +740,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774489999
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777240257
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777241220
       }
     ],
     "14.3 Implementar manejo de errores de Groq API": [
@@ -567,6 +762,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774490642
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777241865
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777242970
       }
     ],
     "15.1 Crear clase `GeneradorExplicaciones`": [
@@ -579,6 +784,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774491275
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777259594
       }
     ],
     "15.2 Implementar método `generarExplicaciónConcisa()`": [
@@ -591,6 +801,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774491895
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777260524
       }
     ],
     "15.3 Implementar método `generarExplicaciónExtendida()`": [
@@ -603,6 +818,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774492475
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777262936
       }
     ],
     "15.4 Implementar método `generarExplicaciónBásica()` (fallback)": [
@@ -615,6 +835,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774493217
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777263637
       }
     ],
     "15.5 Definir prompt del sistema en castellano": [
@@ -627,6 +852,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774494185
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777264113
       }
     ],
     "16. Checkpoint - Verificar explicaciones IA": [
@@ -639,6 +869,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774494601
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777264663
       }
     ],
     "17.1 Crear clase `AnalizadorPartida`": [
@@ -651,6 +886,16 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774494978
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777289708
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777723350
       }
     ],
     "17.2 Implementar método `iniciarAnálisis(nombreUsuario: string)`": [
@@ -663,6 +908,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774495495
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777724631
       }
     ],
     "17.3 Implementar bucle de análisis jugada por jugada": [
@@ -675,6 +925,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774495902
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777725157
       }
     ],
     "17.4 Implementar generación de explicaciones en bucle": [
@@ -687,6 +942,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774496257
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777727568
       }
     ],
     "17.5 Implementar cálculo de estadísticas finales": [
@@ -699,6 +959,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774496609
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777728358
       }
     ],
     "17.6 Implementar métodos `pausarAnálisis()` y `reanudarAnálisis()`": [
@@ -711,6 +976,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774496960
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777729360
       }
     ],
     "17.7 Implementar método `obtenerProgreso()`": [
@@ -723,6 +993,11 @@
         "executionId": "cfeb9073-386f-461f-8919-9d0b7808635c",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784774497474
+      },
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777726235
       }
     ],
     "18.1 Crear componente `IndicadorProgreso`": [
@@ -1363,6 +1638,84 @@
         "executionId": "55f72896-b743-4573-ada3-c0b01cc6ab9f",
         "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
         "timestamp": 1784775399698
+      }
+    ],
+    "7. Implementar parser de PGN": [
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775641315
+      }
+    ],
+    "7.5 Escribir pruebas basadas en propiedades para parser PGN": [
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775647816
+      },
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775655614
+      }
+    ],
+    "7.6 Escribir pruebas de rechazo de PGN inválido": [
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775648747
+      },
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775656462
+      }
+    ],
+    "7.7 Escribir pruebas unitarias de casos específicos de PGN": [
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775649816
+      },
+      {
+        "executionId": "80a94cb0-4662-41e8-bf6e-f1e40bcddc50",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784775657357
+      }
+    ],
+    "9. Configurar e inicializar Stockfish.js": [
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784776698561
+      }
+    ],
+    "10. Implementar evaluador de jugadas": [
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777180254
+      }
+    ],
+    "12. Implementar detector de errores": [
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777216191
+      }
+    ],
+    "14. Implementar cliente de Groq API": [
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777243607
+      }
+    ],
+    "17. Implementar analizador de partidas (orquestador)": [
+      {
+        "executionId": "04c5013c-1bd6-4989-b5c8-4653a00d6174",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784777730482
       }
     ]
   }

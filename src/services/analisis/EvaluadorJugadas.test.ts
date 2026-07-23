@@ -262,6 +262,29 @@ describe('EvaluadorJugadas', () => {
     });
 
     it('debe poder cambiar profundidad entre evaluaciones', async () => {
+      const fen1 = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+      const fen2 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
+      const resultadoMotor: ResultadoAnálisisStockfish = {
+        mejorJugada: 'e2e4',
+        evaluación: 25,
+        profundidad: 15
+      };
+
+      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+
+      // Evaluar con profundidad 15
+      await evaluador.evaluarPosición(fen1);
+      expect(motor.analizarPosición).toHaveBeenCalledWith(fen1, 15);
+
+      // Cambiar profundidad y evaluar una posición diferente
+      evaluador.establecerProfundidad(25);
+      await evaluador.evaluarPosición(fen2);
+      expect(motor.analizarPosición).toHaveBeenCalledWith(fen2, 25);
+    });
+  });
+
+  describe('Caché de evaluaciones', () => {
+    it('debe reutilizar evaluación cacheada para la misma posición', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
       const resultadoMotor: ResultadoAnálisisStockfish = {
         mejorJugada: 'e2e4',
@@ -271,12 +294,150 @@ describe('EvaluadorJugadas', () => {
 
       vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
 
-      await evaluador.evaluarPosición(fen);
-      expect(motor.analizarPosición).toHaveBeenCalledWith(fen, 15);
+      // Primera evaluación - debe llamar al motor
+      const eval1 = await evaluador.evaluarPosición(fen);
+      expect(motor.analizarPosición).toHaveBeenCalledTimes(1);
 
-      evaluador.establecerProfundidad(25);
+      // Segunda evaluación de la misma posición - debe usar caché
+      const eval2 = await evaluador.evaluarPosición(fen);
+      expect(motor.analizarPosición).toHaveBeenCalledTimes(1); // No debe llamar al motor otra vez
+
+      // Ambas evaluaciones deben ser idénticas
+      expect(eval2).toEqual(eval1);
+    });
+
+    it('debe evaluar posiciones diferentes sin usar caché', async () => {
+      const fen1 = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+      const fen2 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
+      
+      const resultado1: ResultadoAnálisisStockfish = {
+        mejorJugada: 'e2e4',
+        evaluación: 25,
+        profundidad: 15
+      };
+      
+      const resultado2: ResultadoAnálisisStockfish = {
+        mejorJugada: 'e7e5',
+        evaluación: -20,
+        profundidad: 15
+      };
+
+      vi.mocked(motor.analizarPosición)
+        .mockResolvedValueOnce(resultado1)
+        .mockResolvedValueOnce(resultado2);
+
+      await evaluador.evaluarPosición(fen1);
+      await evaluador.evaluarPosición(fen2);
+
+      expect(motor.analizarPosición).toHaveBeenCalledTimes(2);
+    });
+
+    it('debe usar caché en evaluarSecuencia para posiciones repetidas', async () => {
+      const fen1 = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+      const fen2 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
+      
+      // Secuencia con posiciones repetidas
+      const fens = [fen1, fen2, fen1, fen2];
+
+      const resultado1: ResultadoAnálisisStockfish = {
+        mejorJugada: 'e2e4',
+        evaluación: 25,
+        profundidad: 15
+      };
+      
+      const resultado2: ResultadoAnálisisStockfish = {
+        mejorJugada: 'e7e5',
+        evaluación: -20,
+        profundidad: 15
+      };
+
+      vi.mocked(motor.analizarPosición)
+        .mockResolvedValueOnce(resultado1)
+        .mockResolvedValueOnce(resultado2);
+
+      const evaluaciones = await evaluador.evaluarSecuencia(fens);
+
+      // Solo debe llamar 2 veces al motor (una por cada posición única)
+      expect(motor.analizarPosición).toHaveBeenCalledTimes(2);
+      expect(evaluaciones).toHaveLength(4);
+      
+      // Las evaluaciones repetidas deben ser idénticas
+      expect(evaluaciones[0]).toEqual(evaluaciones[2]);
+      expect(evaluaciones[1]).toEqual(evaluaciones[3]);
+    });
+
+    it('debe limpiar el caché correctamente', async () => {
+      const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+      const resultadoMotor: ResultadoAnálisisStockfish = {
+        mejorJugada: 'e2e4',
+        evaluación: 25,
+        profundidad: 15
+      };
+
+      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+
+      // Primera evaluación
       await evaluador.evaluarPosición(fen);
-      expect(motor.analizarPosición).toHaveBeenCalledWith(fen, 25);
+      expect(motor.analizarPosición).toHaveBeenCalledTimes(1);
+
+      // Limpiar caché
+      evaluador.limpiarCache();
+
+      // Segunda evaluación debe llamar al motor nuevamente
+      await evaluador.evaluarPosición(fen);
+      expect(motor.analizarPosición).toHaveBeenCalledTimes(2);
+    });
+
+    it('debe proporcionar estadísticas del caché', async () => {
+      const statsInicial = evaluador.obtenerEstadisticasCache();
+      expect(statsInicial.tamaño).toBe(0);
+      expect(statsInicial.utilizacion).toBe(0);
+
+      const fen1 = 'fen1';
+      const fen2 = 'fen2';
+      const resultadoMotor: ResultadoAnálisisStockfish = {
+        mejorJugada: 'e2e4',
+        evaluación: 25,
+        profundidad: 15
+      };
+
+      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+
+      await evaluador.evaluarPosición(fen1);
+      await evaluador.evaluarPosición(fen2);
+
+      const statsDespues = evaluador.obtenerEstadisticasCache();
+      expect(statsDespues.tamaño).toBe(2);
+      expect(statsDespues.utilizacion).toBeGreaterThan(0);
+    });
+
+    it('debe crear caché con límite personalizado', () => {
+      const evaluadorCustom = new EvaluadorJugadas(motor, 500);
+      const stats = evaluadorCustom.obtenerEstadisticasCache();
+      expect(stats.limite).toBe(500);
+    });
+
+    it('debe mantener caché después de cambiar profundidad', async () => {
+      const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+      const resultadoMotor: ResultadoAnálisisStockfish = {
+        mejorJugada: 'e2e4',
+        evaluación: 25,
+        profundidad: 15
+      };
+
+      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+
+      // Evaluar con profundidad 15
+      await evaluador.evaluarPosición(fen);
+      expect(motor.analizarPosición).toHaveBeenCalledTimes(1);
+
+      // Cambiar profundidad
+      evaluador.establecerProfundidad(20);
+
+      // Re-evaluar la misma posición debe usar caché
+      // (aunque la profundidad sea diferente, la clave es el FEN)
+      await evaluador.evaluarPosición(fen);
+      expect(motor.analizarPosición).toHaveBeenCalledTimes(1);
     });
   });
 });

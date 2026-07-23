@@ -13,6 +13,7 @@
 
 import type { Evaluación } from '../../types/evaluacion';
 import type { MotorStockfish } from '../stockfish/MotorStockfish';
+import { CacheEvaluaciones } from '../cache/CacheEvaluaciones';
 
 /**
  * Clase principal para evaluar posiciones de ajedrez
@@ -20,13 +21,16 @@ import type { MotorStockfish } from '../stockfish/MotorStockfish';
 export class EvaluadorJugadas {
   private profundidadPorDefecto: number = 15;
   private motor: MotorStockfish;
+  private cache: CacheEvaluaciones;
 
   /**
    * Constructor
    * @param motor Instancia de MotorStockfish para realizar evaluaciones
+   * @param limiteCacheMaximo Número máximo de posiciones a cachear (por defecto: 1000)
    */
-  constructor(motor: MotorStockfish) {
+  constructor(motor: MotorStockfish, limiteCacheMaximo: number = 1000) {
     this.motor = motor;
+    this.cache = new CacheEvaluaciones(limiteCacheMaximo);
   }
 
   /**
@@ -53,12 +57,22 @@ export class EvaluadorJugadas {
 
   /**
    * Evalúa una posición de ajedrez
+   * Utiliza caché para evitar re-análisis de posiciones repetidas
    * @param fen Posición en notación FEN
    * @param profundidad Profundidad opcional (usa por defecto si no se especifica)
    * @returns Evaluación completa de la posición
    */
   async evaluarPosición(fen: string, profundidad?: number): Promise<Evaluación> {
     const profundidadFinal = profundidad ?? this.profundidadPorDefecto;
+    
+    // Intentar obtener del caché primero
+    const evaluaciónCacheada = this.cache.obtener(fen);
+    if (evaluaciónCacheada !== undefined) {
+      // Reutilizar evaluación del caché
+      return evaluaciónCacheada;
+    }
+
+    // Si no está en caché, evaluar con Stockfish
     const tiempoInicio = Date.now();
 
     // Delegar análisis al motor Stockfish
@@ -76,6 +90,9 @@ export class EvaluadorJugadas {
       profundidad: resultadoMotor.profundidad,
       tiempoEvaluación
     };
+
+    // Almacenar en caché para reutilización futura
+    this.cache.almacenar(fen, evaluación);
 
     return evaluación;
   }
@@ -102,5 +119,21 @@ export class EvaluadorJugadas {
     }
 
     return evaluaciones;
+  }
+
+  /**
+   * Limpia el caché de evaluaciones
+   * Útil para liberar memoria o reiniciar el análisis
+   */
+  limpiarCache(): void {
+    this.cache.limpiar();
+  }
+
+  /**
+   * Obtiene estadísticas del caché
+   * @returns Objeto con información sobre el uso del caché
+   */
+  obtenerEstadisticasCache(): { tamaño: number; limite: number; utilizacion: number } {
+    return this.cache.obtenerEstadisticas();
   }
 }

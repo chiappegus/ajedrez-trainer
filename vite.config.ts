@@ -11,4 +11,15 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/__tests__/setup.ts'],
   },
+  // Configuración para servir archivos WASM correctamente
+  assetsInclude: ['**/*.wasm'],
+  optimizeDeps: {
+    exclude: ['stockfish.js']
+  },
+  server: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    }
+  }
 })

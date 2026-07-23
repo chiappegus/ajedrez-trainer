@@ -149,8 +149,8 @@ Este documento define las tareas de implementación para la funcionalidad de an�
 
 ### Fase 3: Parser de PGN y Análisis de Partidas
 
-- [ ] 7. Implementar parser de PGN
-  - [~] 7.1 Crear clase `ParserPGN`
+- [x] 7. Implementar parser de PGN
+  - [x] 7.1 Crear clase `ParserPGN`
     - Crear `src/services/parseo/ParserPGN.ts`
     - Implementar método `parsear(pgnString: string): Partida`
     - Utilizar librería `chess.js` para parsing y validación
@@ -159,28 +159,28 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - _Requisitos: 2.1, 2.2, 2.3_
 
   
-  - [~] 7.2 Generar posiciones FEN para cada jugada
+  - [x] 7.2 Generar posiciones FEN para cada jugada
     - Recorrer secuencia de jugadas usando chess.js
     - Almacenar FEN resultante en cada objeto `Jugada`
     - Almacenar también notación UCI si está disponible
     - Preservar comentarios y anotaciones (!, !!, ?, ??, !?, ?!)
     - _Requisitos: 2.2, 2.3, 2.5_
   
-  - [~] 7.3 Implementar método `serializar(partida: Partida): string`
+  - [x] 7.3 Implementar método `serializar(partida: Partida): string`
     - Convertir objeto `Partida` de vuelta a formato PGN estándar
     - Incluir encabezados de metadatos
     - Incluir números de jugada y anotaciones
     - Necesario para testing de round-trip
     - _Requisitos: 2.5_
   
-  - [~] 7.4 Implementar manejo de errores en parser
+  - [x] 7.4 Implementar manejo de errores en parser
     - Crear clase `ErrorParseoPGN extends Error`
     - Validar sintaxis PGN antes de procesar
     - Identificar línea de error cuando sea posible
     - Retornar mensaje descriptivo en castellano
     - _Requisitos: 2.4_
   
-  - [ ]* 7.5 Escribir pruebas basadas en propiedades para parser PGN
+  - [x]* 7.5 Escribir pruebas basadas en propiedades para parser PGN
     - **Propiedad 3: Round-trip del parser PGN**
     - **Valida: Requisitos 2.1, 2.2, 2.3, 2.5**
     - Crear `src/__tests__/properties/parser.property.test.ts`
@@ -188,7 +188,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Verificar que serializar → parsear preserve estructura de partida
     - _Requisitos: 2.1, 2.2, 2.3, 2.5_
   
-  - [ ]* 7.6 Escribir pruebas de rechazo de PGN inválido
+  - [x]* 7.6 Escribir pruebas de rechazo de PGN inválido
     - **Propiedad 4: Rechazo de PGN inválido**
     - **Valida: Requisito 2.4**
     - Implementar generador `generadorPGNInválido()` con fast-check
@@ -196,7 +196,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Verificar que mensaje de error sea descriptivo
     - _Requisitos: 2.4_
   
-  - [ ]* 7.7 Escribir pruebas unitarias de casos específicos de PGN
+  - [x]* 7.7 Escribir pruebas unitarias de casos específicos de PGN
     - Probar apertura española estándar
     - Probar PGN con comentarios
     - Probar PGN con anotaciones (!, ?, etc.)
@@ -213,21 +213,21 @@ Este documento define las tareas de implementación para la funcionalidad de an�
 
 ### Fase 4: Motor de Análisis con Stockfish
 
-- [ ] 9. Configurar e inicializar Stockfish.js
-  - [~] 9.1 Agregar Stockfish.js al proyecto
+- [x] 9. Configurar e inicializar Stockfish.js
+  - [x] 9.1 Agregar Stockfish.js al proyecto
     - Descargar Stockfish.js WASM desde CDN o instalarlo vía npm
     - Colocar archivos WASM en carpeta `public/` para acceso directo
     - Configurar Vite para servir archivos WASM correctamente
     - _Requisitos: 3.1, 3.5_
   
-  - [~] 9.2 Crear Web Worker para Stockfish
+  - [x] 9.2 Crear Web Worker para Stockfish
     - Crear `src/services/stockfish/stockfish-worker.ts`
     - Implementar inicialización de Stockfish WASM
     - Configurar comunicación bidireccional con hilo principal (postMessage)
     - Implementar manejo de comandos UCI (uci, isready, position, go, stop)
     - _Requisitos: 3.1, 3.3, 10.5_
   
-  - [~] 9.3 Crear clase `MotorStockfish` (wrapper)
+  - [x] 9.3 Crear clase `MotorStockfish` (wrapper)
     - Crear `src/services/stockfish/MotorStockfish.ts`
     - Implementar método `inicializar(): Promise<void>`
     - Crear instancia de Worker apuntando a `stockfish-worker.ts`
@@ -235,7 +235,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Manejar errores de inicialización
     - _Requisitos: 3.1, 3.2, 3.4_
   
-  - [~] 9.4 Implementar método `analizarPosición()`
+  - [x] 9.4 Implementar método `analizarPosición()`
     - Recibir parámetros: `fen: string`, `profundidad: number`
     - Enviar comandos UCI: `position fen {fen}`, `go depth {profundidad}`
     - Parsear respuesta UCI (líneas `info` y `bestmove`)
@@ -245,13 +245,13 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - _Requisitos: 4.1, 4.2, 4.3, 4.4, 4.5_
 
   
-  - [~] 9.5 Implementar conversión de evaluaciones UCI a centipawns normalizados
+  - [x] 9.5 Implementar conversión de evaluaciones UCI a centipawns normalizados
     - Parsear líneas `info score cp X` → retornar X
     - Parsear líneas `info score mate X` → retornar 10000 si X > 0, -10000 si X < 0
     - Manejar evaluaciones desde perspectiva de blancas (positivo = ventaja blanca)
     - _Requisitos: 4.2, 4.3_
   
-  - [~] 9.6 Implementar conversión de mejor jugada UCI a SAN
+  - [x] 9.6 Implementar conversión de mejor jugada UCI a SAN
     - Usar chess.js para convertir jugada UCI (e.g., "e2e4") a SAN (e.g., "e4")
     - Validar que la jugada sea legal en la posición
     - Almacenar ambos formatos (UCI y SAN)
@@ -265,22 +265,22 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Verificar que mejor jugada sea una jugada legal
     - _Requisitos: 3.1, 3.2, 4.1, 4.2, 4.4_
 
-- [ ] 10. Implementar evaluador de jugadas
-  - [~] 10.1 Crear clase `EvaluadorJugadas`
+- [x] 10. Implementar evaluador de jugadas
+  - [x] 10.1 Crear clase `EvaluadorJugadas`
     - Crear `src/services/analisis/EvaluadorJugadas.ts`
     - Implementar constructor que reciba instancia de `MotorStockfish`
     - Definir profundidad por defecto: 15 plies
     - Implementar método `establecerProfundidad(profundidad: number)`
     - _Requisitos: 4.1, 4.2_
   
-  - [~] 10.2 Implementar método `evaluarPosición()`
+  - [x] 10.2 Implementar método `evaluarPosición()`
     - Recibir FEN y profundidad
     - Llamar a `MotorStockfish.analizarPosición()`
     - Retornar objeto `Evaluación` completo con todos los campos requeridos
     - Medir tiempo de evaluación (tiempoEvaluación en ms)
     - _Requisitos: 4.1, 4.2, 4.3, 4.4, 4.5_
   
-  - [~] 10.3 Implementar método `evaluarSecuencia()`
+  - [x] 10.3 Implementar método `evaluarSecuencia()`
     - Recibir array de FENs
     - Evaluar cada posición secuencialmente (una a la vez)
     - Implementar yields al hilo principal cada 2 segundos usando `setTimeout(resolve, 0)`
@@ -288,14 +288,14 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - _Requisitos: 4.6, 10.1, 10.2_
 
   
-  - [~] 10.4 Implementar caché de evaluaciones para optimización
+  - [x] 10.4 Implementar caché de evaluaciones para optimización
     - Crear `src/services/cache/CacheEvaluaciones.ts`
     - Implementar Map con FEN como clave y `Evaluación` como valor
     - Limitar tamaño del caché a 1000 posiciones (eliminar más antiguas)
     - Integrar en `EvaluadorJugadas` para reutilizar evaluaciones
     - _Requisitos: 4.6_
 
-- [~] 11. Checkpoint - Verificar motor de análisis
+- [x] 11. Checkpoint - Verificar motor de análisis
   - Confirmar que Stockfish se inicializa correctamente en Web Worker
   - Confirmar que evaluaciones funcionan para posiciones de prueba
   - Verificar que no hay bloqueo de UI durante análisis
@@ -304,32 +304,32 @@ Este documento define las tareas de implementación para la funcionalidad de an�
 
 ### Fase 5: Detección de Errores
 
-- [ ] 12. Implementar detector de errores
-  - [~] 12.1 Crear clase `DetectorErrores`
+- [x] 12. Implementar detector de errores
+  - [x] 12.1 Crear clase `DetectorErrores`
     - Crear `src/services/analisis/DetectorErrores.ts`
     - Definir umbral de error significativo: 100 centipawns
     - Implementar método `detectarError(evalAntes, evalDespués, jugada, numeroJugada)`
     - _Requisitos: 5.1, 5.2_
   
-  - [~] 12.2 Implementar cálculo de cambio de evaluación según turno
+  - [x] 12.2 Implementar cálculo de cambio de evaluación según turno
     - Si turno es 'white': cambio = evalDespués.centipawns - evalAntes.centipawns
     - Si turno es 'black': cambio = evalAntes.centipawns - evalDespués.centipawns (invertir)
     - Pérdida = cambio negativo con magnitud >= 100cp
     - _Requisitos: 5.1, 5.4_
   
-  - [~] 12.3 Implementar construcción de objeto `ErrorDetectado`
+  - [x] 12.3 Implementar construcción de objeto `ErrorDetectado`
     - Crear objeto con todos los campos requeridos: numeroJugada, turno, fenAntes, jugadaRealizada, mejorJugada, mejorJugadaSAN, evaluaciónAntes, evaluaciónDespués, pérdidaCentipawns
     - Asegurar que no haya valores null o undefined
     - Calcular pérdida en valor absoluto
     - _Requisitos: 5.2, 5.3_
   
-  - [~] 12.4 Implementar filtrado de primeras 3 jugadas
+  - [x] 12.4 Implementar filtrado de primeras 3 jugadas
     - Si numeroJugada <= 3, retornar null (no error)
     - Aplicar detección solo desde jugada 4 en adelante
     - _Requisitos: 5.5_
 
   
-  - [~] 12.5 Implementar distinción de errores por color
+  - [x] 12.5 Implementar distinción de errores por color
     - Almacenar turno ('white' o 'black') en cada `ErrorDetectado`
     - Asegurar que la lógica de pérdida respete la perspectiva del jugador
     - _Requisitos: 5.4_
@@ -372,7 +372,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - _Requisitos: 5.1, 5.2_
 
 
-- [~] 13. Checkpoint - Verificar detección de errores
+- [x] 13. Checkpoint - Verificar detección de errores
   - Confirmar que detector identifica errores correctamente
   - Confirmar que todas las pruebas de propiedades pasan
   - Probar con partidas reales que contengan errores conocidos
@@ -380,15 +380,15 @@ Este documento define las tareas de implementación para la funcionalidad de an�
 
 ### Fase 6: Explicaciones con IA (Groq API)
 
-- [ ] 14. Implementar cliente de Groq API
-  - [~] 14.1 Crear clase `ClienteGroq`
+- [x] 14. Implementar cliente de Groq API
+  - [x] 14.1 Crear clase `ClienteGroq`
     - Crear `src/services/groq/ClienteGroq.ts`
     - Implementar constructor que reciba API Key
     - Definir constante: endpoint `https://api.groq.com/openai/v1/chat/completions`
     - Definir interfaces: `ParámetrosChatCompletion`, `Mensaje`, `RespuestaGroq`
     - _Requisitos: 8.1, 8.2_
   
-  - [~] 14.2 Implementar método `chatCompletion()`
+  - [x] 14.2 Implementar método `chatCompletion()`
     - Realizar petición POST a Groq API
     - Incluir header `Authorization: Bearer {apiKey}`
     - Enviar body JSON con modelo, mensajes, max_tokens, temperature
@@ -396,7 +396,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Parsear respuesta y retornar contenido generado
     - _Requisitos: 8.1, 8.2_
   
-  - [~] 14.3 Implementar manejo de errores de Groq API
+  - [x] 14.3 Implementar manejo de errores de Groq API
     - Error 401 → API Key inválida
     - Error 429 → Rate limit excedido
     - Error 500 → Error de servidor
@@ -412,14 +412,14 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - _Requisitos: 8.1, 8.9_
 
 - [ ] 15. Implementar generador de explicaciones
-  - [~] 15.1 Crear clase `GeneradorExplicaciones`
+  - [x] 15.1 Crear clase `GeneradorExplicaciones`
     - Crear `src/services/analisis/GeneradorExplicaciones.ts`
     - Implementar constructor que reciba instancia de `ClienteGroq`
     - Definir constante `PROMPT_SISTEMA_EXPLICACIONES` en castellano
     - _Requisitos: 8.1, 8.3_
 
   
-  - [~] 15.2 Implementar método `generarExplicaciónConcisa()`
+  - [x] 15.2 Implementar método `generarExplicaciónConcisa()`
     - Construir prompt con contexto del error: FEN, turno, jugada realizada, mejor jugada, pérdida en cp
     - Solicitar explicación en máximo 150 palabras en castellano
     - Incluir: qué se jugó, por qué fue error, qué se debió jugar, amenazas/tácticas pasadas por alto
@@ -427,25 +427,25 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Manejar errores con fallback a explicación básica
     - _Requisitos: 8.2, 8.3, 8.4, 8.9_
   
-  - [~] 15.3 Implementar método `generarExplicaciónExtendida()`
+  - [x] 15.3 Implementar método `generarExplicaciónExtendida()`
     - Similar a concisa pero solicitar hasta 300 palabras
     - Max_tokens: 1000
     - Incluir más detalles tácticos y análisis de variantes
     - _Requisitos: 8.6_
   
-  - [~] 15.4 Implementar método `generarExplicaciónBásica()` (fallback)
+  - [x] 15.4 Implementar método `generarExplicaciónBásica()` (fallback)
     - Generar explicación simple sin IA cuando Groq falla
     - Formato: "Jugada X: {turno} jugó {jugadaRealizada}, perdiendo {pérdidaCentipawns}cp. La mejor jugada era {mejorJugada}."
     - En castellano
     - _Requisitos: 8.9_
   
-  - [~] 15.5 Definir prompt del sistema en castellano
+  - [x] 15.5 Definir prompt del sistema en castellano
     - Prompt que indique: "Eres un entrenador de ajedrez educativo y amigable. Explica errores en castellano de forma clara y concisa."
     - Especificar estructura: qué se jugó, por qué fue error, qué se debió jugar, qué se pasó por alto
     - Tono educativo y motivador
     - _Requisitos: 8.3_
 
-- [~] 16. Checkpoint - Verificar explicaciones IA
+- [x] 16. Checkpoint - Verificar explicaciones IA
   - Confirmar que Groq API responde correctamente
   - Verificar que explicaciones están en castellano
   - Verificar que fallback funciona cuando Groq falla
@@ -454,15 +454,15 @@ Este documento define las tareas de implementación para la funcionalidad de an�
 
 ### Fase 7: Orquestador de Análisis
 
-- [ ] 17. Implementar analizador de partidas (orquestador)
-  - [~] 17.1 Crear clase `AnalizadorPartida`
+- [x] 17. Implementar analizador de partidas (orquestador)
+  - [x] 17.1 Crear clase `AnalizadorPartida`
     - Crear `src/services/analisis/AnalizadorPartida.ts`
     - Implementar constructor que reciba: ClienteLichess, ParserPGN, EvaluadorJugadas, DetectorErrores, GeneradorExplicaciones
     - Definir estado interno: `EstadoAnalizador`
     - _Requisitos: 9.1, 9.2_
 
   
-  - [~] 17.2 Implementar método `iniciarAnálisis(nombreUsuario: string)`
+  - [x] 17.2 Implementar método `iniciarAnálisis(nombreUsuario: string)`
     - Obtener PGN desde Lichess usando `ClienteLichess.obtenerÚltimaPartida()`
     - Parsear PGN usando `ParserPGN.parsear()`
     - Inicializar Stockfish si no está cargado
@@ -470,7 +470,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Retornar `Promise<ResultadoAnálisis>`
     - _Requisitos: 9.1, 9.2_
   
-  - [~] 17.3 Implementar bucle de análisis jugada por jugada
+  - [x] 17.3 Implementar bucle de análisis jugada por jugada
     - Iterar sobre jugadas desde índice 3 (jugada 4 en adelante)
     - Para cada jugada: evaluar posición, detectar error, generar explicación si aplica
     - Almacenar evaluaciones en Map indexado por número de jugada
@@ -478,25 +478,25 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Actualizar progreso después de cada jugada
     - _Requisitos: 9.1, 9.2, 5.5_
   
-  - [~] 17.4 Implementar generación de explicaciones en bucle
+  - [x] 17.4 Implementar generación de explicaciones en bucle
     - Cuando se detecta un error, llamar a `GeneradorExplicaciones.generarExplicaciónConcisa()`
     - Almacenar explicación en el objeto `ErrorDetectado`
     - Si Groq falla, usar explicación básica automáticamente
     - _Requisitos: 8.1, 8.9_
   
-  - [~] 17.5 Implementar cálculo de estadísticas finales
+  - [x] 17.5 Implementar cálculo de estadísticas finales
     - Calcular pérdida promedio de centipawns por jugada
     - Contar errores de blancas y errores de negras
     - Identificar mayor pérdida y jugada donde ocurrió
     - Clasificar rendimiento: excelente (<10cp), sólido (<20cp), aceptable (<40cp), mejorable (>=40cp)
     - _Requisitos: 9.2, 12.1, 12.2_
   
-  - [~] 17.6 Implementar métodos `pausarAnálisis()` y `reanudarAnálisis()`
+  - [x] 17.6 Implementar métodos `pausarAnálisis()` y `reanudarAnálisis()`
     - Pausar: cambiar estado a 'pausado', detener bucle de evaluación
     - Reanudar: cambiar estado a 'analizando', continuar desde última jugada
     - _Requisitos: 10.3, 10.4, 9.5_
   
-  - [~] 17.7 Implementar método `obtenerProgreso()`
+  - [x] 17.7 Implementar método `obtenerProgreso()`
     - Retornar objeto `ProgresoAnálisis` con: estado, jugadaActual, totalJugadas, erroresEncontrados
     - Calcular tiempo promedio por jugada basado en evaluaciones completadas
     - Estimar tiempo restante: (totalJugadas - jugadaActual) * tiempoPromedio
