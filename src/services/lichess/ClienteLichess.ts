@@ -113,6 +113,9 @@ export class ClienteLichess {
       if (respuesta.status === 401) {
         throw new Error('Token de API inválido o expirado');
       }
+      if (respuesta.status === 429) {
+        throw new Error('Rate limit excedido. Por favor espera un minuto e intenta de nuevo');
+      }
       throw new Error(`Error de API de Lichess: ${respuesta.status}`);
     }
 
@@ -156,6 +159,9 @@ export class ClienteLichess {
       }
       if (respuesta.status === 401) {
         throw new Error('Token de API inválido o expirado');
+      }
+      if (respuesta.status === 429) {
+        throw new Error('Rate limit excedido. Por favor espera un minuto e intenta de nuevo');
       }
       throw new Error(`Error de API de Lichess: ${respuesta.status}`);
     }

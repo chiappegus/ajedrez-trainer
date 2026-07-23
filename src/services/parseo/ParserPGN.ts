@@ -48,16 +48,16 @@ export class ParserPGN {
       // Extraer metadatos de los encabezados PGN
       const metadatos = this.extraerMetadatos(chess);
 
-      // Extraer jugadas en formato estructurado
-      const jugadas = this.extraerJugadas(chess);
+      // Extraer el resultado ANTES de procesar jugadas
+      const resultadoPartida = this.extraerResultado(chess, pgnString);
 
-      // Obtener el resultado de la partida
-      const resultado = this.extraerResultado(chess);
+      // Extraer jugadas en formato estructurado
+      const jugadas = this.extraerJugadas(chess, pgnString);
 
       return {
         metadatos,
         jugadas,
-        resultado
+        resultado: resultadoPartida
       };
 
     } catch (error) {
@@ -194,13 +194,16 @@ export class ParserPGN {
   /**
    * Extrae las jugadas del objeto Chess en formato estructurado
    */
-  private extraerJugadas(chess: Chess): Jugada[] {
+  private extraerJugadas(chess: Chess, pgnOriginal: string): Jugada[] {
     const jugadas: Jugada[] = [];
     const historial = chess.history({ verbose: true });
 
-    // Resetear posición para generar FENs
-    chess.reset();
-    chess.loadPgn(chess.pgn());
+    // Crear nueva instancia y cargar PGN para generar FENs
+    const chessTemp = new Chess();
+    chessTemp.loadPgn(pgnOriginal);
+
+    // Resetear para procesar desde el inicio
+    chessTemp.reset();
 
     for (let i = 0; i < historial.length; i++) {
       const movimiento = historial[i];
@@ -216,8 +219,8 @@ export class ParserPGN {
       };
 
       // Hacer la jugada para obtener el FEN resultante
-      chess.move(movimiento.san);
-      jugada.fen = chess.fen();
+      chessTemp.move(movimiento.san);
+      jugada.fen = chessTemp.fen();
 
       // Extraer comentarios si existen (chess.js los incluye en el objeto)
       if (movimiento.comments && movimiento.comments.length > 0) {
@@ -240,18 +243,35 @@ export class ParserPGN {
   }
 
   /**
-   * Extrae el resultado de la partida
+   * Extrae el resultado de la partida desde el string PGN original
+   * porque chess.js no preserva el resultado del encabezado después de loadPgn
    */
-  private extraerResultado(chess: Chess): '1-0' | '0-1' | '1/2-1/2' | '*' {
+  private extraerResultado(chess: Chess, pgnOriginal: string): '1-0' | '0-1' | '1/2-1/2' | '*' {
+    // Primero intentar desde el encabezado
     const header = chess.header();
-    const resultado = header.Result;
+    const resultadoHeader = header.Result;
 
-    // Validar que sea uno de los resultados válidos
-    if (resultado === '1-0' || resultado === '0-1' || resultado === '1/2-1/2') {
-      return resultado;
+    if (resultadoHeader === '1-0' || resultadoHeader === '0-1' || resultadoHeader === '1/2-1/2' || resultadoHeader === '*') {
+      return resultadoHeader;
     }
 
-    // Si no hay resultado definido o es inválido, usar '*' (partida en curso)
+    // Si el header no tiene resultado válido, buscar en el string PGN original
+    // El resultado aparece al final de las jugadas
+    const resultadosValidos = ['1-0', '0-1', '1/2-1/2', '*'];
+    
+    // Buscar de atrás hacia adelante para encontrar el resultado
+    const líneas = pgnOriginal.trim().split('\n');
+    for (let i = líneas.length - 1; i >= 0; i--) {
+      const línea = líneas[i].trim();
+      
+      for (const resultado of resultadosValidos) {
+        if (línea.includes(resultado)) {
+          return resultado as '1-0' | '0-1' | '1/2-1/2' | '*';
+        }
+      }
+    }
+
+    // Si no hay resultado definido, usar '*' (partida en curso)
     return '*';
   }
 }

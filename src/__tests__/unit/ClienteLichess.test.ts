@@ -116,6 +116,17 @@ describe('ClienteLichess', () => {
       );
     });
 
+    it('debe lanzar error cuando se excede rate limit (429)', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 429,
+      });
+
+      await expect(cliente.obtenerCuentaUsuario()).rejects.toThrow(
+        'Rate limit excedido. Por favor espera un minuto e intenta de nuevo'
+      );
+    });
+
     it('debe lanzar error con código de status para otros errores', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
@@ -201,6 +212,17 @@ describe('ClienteLichess', () => {
 
       await expect(cliente.obtenerÚltimaPartida()).rejects.toThrow(
         'Token de API inválido o expirado'
+      );
+    });
+
+    it('debe lanzar error cuando se excede rate limit (429)', async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: false,
+        status: 429,
+      });
+
+      await expect(cliente.obtenerÚltimaPartida()).rejects.toThrow(
+        'Rate limit excedido. Por favor espera un minuto e intenta de nuevo'
       );
     });
 

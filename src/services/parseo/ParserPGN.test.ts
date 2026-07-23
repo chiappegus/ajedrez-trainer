@@ -287,7 +287,7 @@ describe('ParserPGN', () => {
     });
 
     it('debe manejar promoción de peón', () => {
-      // Partida corta con promoción
+      // Partida simple y corta con promoción verificada
       const pgn = `[Event "Test"]
 [Site "Test"]
 [Date "2024.01.15"]
@@ -295,13 +295,15 @@ describe('ParserPGN', () => {
 [Black "B"]
 [Result "*"]
 
-1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 c6 5. Nf3 Bg4 6. h3 Bxf3 7. Qxf3 e6 8. Be3 Nf6 9. O-O-O Nbd7 10. Kb1 Bd6 11. g4 O-O 12. g5 Ne8 13. Qh5 g6 14. Qh6 Ng7 15. h4 Rfe8 16. h5 Be7 17. hxg6 hxg6 18. Rxh8+ Kxh8 19. Qxg7+ Kxg7 20. Rh1 Rh8 21. Rxh8 Kxh8 22. Bh3 Kg7 23. Ne4 Nf6 24. Nxf6 Bxf6 25. gxf6+ Kxf6 26. Bg5+ Kg7 27. Bf4 Qd8 28. Bg5 Qe8 29. c3 Qh5 30. Bc8 b6 31. Bxa7 c5 32. Bxb6 cxd4 33. cxd4 Qd1+ 34. Kc2 Qe2+ 35. Kb3 Qxf2 36. Kc3 Qe3+ 37. Kc4 Qe4 38. Kb5 Qxd4 39. Ka6 Qc4+ 40. Kb7 Qxb6+ 41. Kxb6 f5 42. a4 f4 43. a5 f3 44. a6 f2 45. a7 f1=Q 46. a8=Q *`;
+1. a4 h5 2. a5 h4 3. a6 h3 4. axb7 hxg2 5. bxa8=Q gxh1=Q *`;
 
       const partida = parser.parsear(pgn);
 
-      // Buscar las promociones en las últimas jugadas
+      // Buscar las promociones en las jugadas
       const promociones = partida.jugadas.filter(j => j.jugadaSAN.includes('='));
-      expect(promociones.length).toBeGreaterThan(0);
+      expect(promociones.length).toBe(2);
+      expect(promociones[0].jugadaSAN).toBe('bxa8=Q');
+      expect(promociones[1].jugadaSAN).toBe('gxh1=Q');
     });
 
     it('debe asignar valores por defecto cuando faltan encabezados', () => {
@@ -315,6 +317,222 @@ describe('ParserPGN', () => {
       expect(partida.metadatos.evento).toBeDefined();
       expect(partida.metadatos.sitio).toBeDefined();
       expect(partida.jugadas).toHaveLength(3);
+    });
+  });
+
+  describe('Verificación Requisitos Específicos - Tareas 7.2, 7.3, 7.4', () => {
+    describe('7.2 - Generación de FEN para cada jugada', () => {
+      it('debe generar FEN para TODAS las jugadas de una partida completa', () => {
+        const pgn = `[Event "Test"]
+[Site "Test"]
+[Date "2024.01.15"]
+[White "A"]
+[Black "B"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 *`;
+
+        const partida = parser.parsear(pgn);
+
+        // Verificar que TODAS las jugadas tienen FEN
+        expect(partida.jugadas).toHaveLength(10);
+        for (const jugada of partida.jugadas) {
+          expect(jugada.fen).toBeDefined();
+          expect(jugada.fen).not.toBe('');
+          expect(jugada.fen).toMatch(/^[rnbqkpRNBQKP1-8\/\s]+\s[wb]\s[KQkq-]+\s[a-h0-8-]+\s\d+\s\d+$/);
+        }
+      });
+
+      it('debe generar FEN diferentes para cada posición', () => {
+        const pgn = `[Event "Test"]
+[Site "Test"]
+[Date "2024.01.15"]
+[White "A"]
+[Black "B"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 *`;
+
+        const partida = parser.parsear(pgn);
+
+        // Cada FEN debe ser único (las posiciones cambian)
+        const fens = partida.jugadas.map(j => j.fen);
+        const uniqueFens = new Set(fens);
+        expect(uniqueFens.size).toBe(fens.length);
+      });
+
+      it('debe tener FEN válido con información completa', () => {
+        const pgn = `[Event "Test"]
+[Site "Test"]
+[Date "2024.01.15"]
+[White "A"]
+[Black "B"]
+[Result "*"]
+
+1. d4 Nf6 *`;
+
+        const partida = parser.parsear(pgn);
+
+        // Verificar estructura del FEN: posición turno enroque enpassant halfmove fullmove
+        const fen = partida.jugadas[0].fen!;
+        const partes = fen.split(' ');
+        expect(partes).toHaveLength(6);
+        expect(partes[1]).toMatch(/^[wb]$/); // Turno
+        expect(partes[2]).toMatch(/^[KQkq-]+$/); // Enroque
+      });
+    });
+
+    describe('7.3 - Método serializar para round-trip', () => {
+      it('debe serializar correctamente todos los encabezados requeridos', () => {
+        const pgn = `[Event "Test Event"]
+[Site "lichess.org"]
+[Date "2024.01.15"]
+[White "Jugador1"]
+[Black "Jugador2"]
+[Result "1-0"]
+
+1. e4 e5 1-0`;
+
+        const partida = parser.parsear(pgn);
+        const serializado = parser.serializar(partida);
+
+        // Verificar todos los encabezados obligatorios
+        expect(serializado).toContain('[Event "Test Event"]');
+        expect(serializado).toContain('[Site "lichess.org"]');
+        expect(serializado).toContain('[Date "2024.01.15"]');
+        expect(serializado).toContain('[White "Jugador1"]');
+        expect(serializado).toContain('[Black "Jugador2"]');
+        expect(serializado).toContain('[Result "1-0"]');
+      });
+
+      it('debe serializar jugadas con numeración correcta', () => {
+        const pgn = `[Event "Test"]
+[Site "Test"]
+[Date "2024.01.15"]
+[White "A"]
+[Black "B"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 *`;
+
+        const partida = parser.parsear(pgn);
+        const serializado = parser.serializar(partida);
+
+        // Verificar numeración de jugadas
+        expect(serializado).toMatch(/1\.\s+e4/);
+        expect(serializado).toMatch(/2\.\s+Nf3/);
+        expect(serializado).toMatch(/3\.\s+Bb5/);
+      });
+
+      it('debe omitir encabezados opcionales ausentes', () => {
+        const pgn = `[Event "Test"]
+[Site "Test"]
+[Date "2024.01.15"]
+[White "A"]
+[Black "B"]
+[Result "*"]
+
+1. e4 *`;
+
+        const partida = parser.parsear(pgn);
+        const serializado = parser.serializar(partida);
+
+        // No debe incluir WhiteElo/BlackElo si no están presentes
+        if (!partida.metadatos.eloBlancas) {
+          expect(serializado).not.toContain('[WhiteElo');
+        }
+        if (!partida.metadatos.apertura) {
+          expect(serializado).not.toContain('[Opening');
+        }
+      });
+
+      it('debe terminar con el resultado de la partida', () => {
+        const resultados: Array<'1-0' | '0-1' | '1/2-1/2' | '*'> = ['1-0', '0-1', '1/2-1/2', '*'];
+
+        for (const resultado of resultados) {
+          const pgn = `[Event "Test"]
+[Site "Test"]
+[Date "2024.01.15"]
+[White "A"]
+[Black "B"]
+[Result "${resultado}"]
+
+1. e4 ${resultado}`;
+
+          const partida = parser.parsear(pgn);
+          const serializado = parser.serializar(partida);
+
+          expect(serializado.trim()).toMatch(new RegExp(`${resultado.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
+        }
+      });
+    });
+
+    describe('7.4 - Manejo de errores en parser', () => {
+      it('debe lanzar ErrorParseoPGN con PGN solo con espacios en blanco', () => {
+        expect(() => parser.parsear('     ')).toThrow(ErrorParseoPGN);
+        expect(() => parser.parsear('\t\t\t')).toThrow(ErrorParseoPGN);
+        expect(() => parser.parsear('\n\n\n')).toThrow(ErrorParseoPGN);
+      });
+
+      it('debe lanzar ErrorParseoPGN con mensaje que incluye "Error parseando PGN"', () => {
+        try {
+          parser.parsear('texto random no-PGN');
+          expect.fail('Debería haber lanzado ErrorParseoPGN');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ErrorParseoPGN);
+          if (error instanceof ErrorParseoPGN) {
+            expect(error.message).toContain('Error parseando PGN');
+            expect(error.name).toBe('ErrorParseoPGN');
+          }
+        }
+      });
+
+      it('debe rechazar PGN con formato de encabezados inválido', () => {
+        const pgnInválido = `Event: Test
+Site: Test
+1. e4 *`;
+
+        expect(() => parser.parsear(pgnInválido)).toThrow(ErrorParseoPGN);
+      });
+
+      it('debe rechazar jugadas con sintaxis incorrecta', () => {
+        const pgnInválido = `[Event "Test"]
+[Site "Test"]
+[Date "2024.01.15"]
+[White "A"]
+[Black "B"]
+[Result "*"]
+
+1. e4 e5 2. Xxx *`;
+
+        expect(() => parser.parsear(pgnInválido)).toThrow(ErrorParseoPGN);
+      });
+
+      it('debe rechazar movimientos ilegales', () => {
+        const pgnInválido = `[Event "Test"]
+[Site "Test"]
+[Date "2024.01.15"]
+[White "A"]
+[Black "B"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. e5 *`; // e5 es ilegal, el peón ya está en e4
+
+        expect(() => parser.parsear(pgnInválido)).toThrow(ErrorParseoPGN);
+      });
+
+      it('debe proporcionar información útil en el error', () => {
+        try {
+          parser.parsear('[Event "Test"]\n\nX. invalid move');
+          expect.fail('Debería haber lanzado error');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ErrorParseoPGN);
+          if (error instanceof ErrorParseoPGN) {
+            // El mensaje debe ser descriptivo
+            expect(error.message.length).toBeGreaterThan(10);
+          }
+        }
+      });
     });
   });
 });

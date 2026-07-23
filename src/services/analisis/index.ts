@@ -4,3 +4,5 @@
  */
 
 export { DetectorErrores } from './DetectorErrores';
+export { EvaluadorJugadas } from './EvaluadorJugadas';
+export { GeneradorExplicaciones } from './GeneradorExplicaciones';
