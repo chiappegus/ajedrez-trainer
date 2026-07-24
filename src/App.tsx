@@ -37,7 +37,7 @@ type Vista = 'configuracion' | 'principal' | 'analizando' | 'resultados';
 
 function App() {
   const [vistaActual, setVistaActual] = useState<Vista>('configuracion');
-  const { credencialesExisten, credenciales } = useCredenciales();
+  const { credencialesExisten, credenciales, recargarCredenciales } = useCredenciales();
   const { motor, cargando: cargandoStockfish, inicializarMotor, error: errorStockfish } = useStockfish();
   
   // Estado del análisis
@@ -72,8 +72,9 @@ function App() {
    */
   const handleGuardadoExitoso = useCallback(() => {
     Logger.info('Credenciales guardadas correctamente');
+    recargarCredenciales();
     setVistaActual('principal');
-  }, []);
+  }, [recargarCredenciales]);
 
   /**
    * Navega a configuración
