@@ -41,7 +41,7 @@ interface ModalVarianteProps {
  */
 export function ModalVariante({ error, onCerrar }: ModalVarianteProps) {
   const [posiciónActual, setPosiciónActual] = useState(0);
-  const [juego] = useState(() => {
+  const [_juego] = useState(() => {
     // Inicializar juego con la posición antes del error
     const chess = new Chess(error.fenAntes);
     return chess;

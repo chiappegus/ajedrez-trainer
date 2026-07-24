@@ -9,15 +9,6 @@ import type { ClienteGroq, ParámetrosChatCompletion } from '../groq/ClienteGroq
 import type { ErrorDetectado } from '../../types/error';
 import { sanAFigurine } from '../../utils/notacion';
 
-/**
- * Mapa de piezas para usar en el prompt
- */
-const FIGURINES_MAP: Record<string, string> = {
-  'K': '♚', 'Q': '♛', 'R': '♜', 'B': '♝', 'N': '♞',
-  'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟',
-  'P': '♙',
-};
-
 const PROMPT_SISTEMA = `Eres un gran maestro de ajedrez analizando los errores de un estudiante.
 
 REGLAS ESTRICTAS:

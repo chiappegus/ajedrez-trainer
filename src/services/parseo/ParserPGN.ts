@@ -11,11 +11,14 @@ import type { Partida, MetadatosPartida, Jugada } from '../../types/partida';
  * Error personalizado para fallos en el parseo de PGN
  */
 export class ErrorParseoPGN extends Error {
-  constructor(mensaje: string, public líneaError?: number) {
+  public líneaError?: number;
+
+  constructor(mensaje: string, líneaError?: number) {
     super(
       `Error parseando PGN${líneaError ? ` en línea ${líneaError}` : ''}: ${mensaje}`
     );
     this.name = 'ErrorParseoPGN';
+    this.líneaError = líneaError;
   }
 }
 
@@ -223,8 +226,9 @@ export class ParserPGN {
       jugada.fen = chessTemp.fen();
 
       // Extraer comentarios si existen (chess.js los incluye en el objeto)
-      if (movimiento.comments && movimiento.comments.length > 0) {
-        jugada.comentario = movimiento.comments[0];
+      const moveWithComments = movimiento as any;
+      if (moveWithComments.comments && moveWithComments.comments.length > 0) {
+        jugada.comentario = moveWithComments.comments[0];
       }
 
       // Extraer anotaciones de la jugada SAN

@@ -24,7 +24,7 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.example.tsx", "src/**/__tests__/**"]
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.example.ts", "src/**/*.example.tsx", "src/__tests__/**", "src/services/stockfish/stockfish-worker.ts"]
 
 }
 

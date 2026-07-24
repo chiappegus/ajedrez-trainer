@@ -1,5 +1,5 @@
 import { VisualizadorTablero } from './VisualizadorTablero';
-import type { Movimiento, TipoResaltado } from './VisualizadorTablero';
+import type { Movimiento } from './VisualizadorTablero';
 import './ContenedorTablerosDuales.css';
 
 /**

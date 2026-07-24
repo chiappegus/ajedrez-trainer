@@ -24,8 +24,8 @@ export class ErrorAjedrezTrainer extends Error {
     this.causaOriginal = causaOriginal;
 
     // Mantener stack trace correcto
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
+    if ('captureStackTrace' in Error) {
+      (Error as any).captureStackTrace(this, this.constructor);
     }
   }
 }

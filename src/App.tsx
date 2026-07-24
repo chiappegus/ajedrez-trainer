@@ -26,19 +26,13 @@ import './App.css'
 
 // Lazy imports para optimización
 import type { AnalizadorPartida } from './services/analisis/AnalizadorPartida'
-import type { ClienteLichess } from './services/lichess/ClienteLichess'
-import type { ParserPGN } from './services/parseo/ParserPGN'
-import type { EvaluadorJugadas } from './services/analisis/EvaluadorJugadas'
-import type { DetectorErrores } from './services/analisis/DetectorErrores'
-import type { GeneradorExplicaciones } from './services/analisis/GeneradorExplicaciones'
-import type { ClienteGroq } from './services/groq/ClienteGroq'
 
 type Vista = 'configuracion' | 'principal' | 'analizando' | 'resultados';
 
 function App() {
   const [vistaActual, setVistaActual] = useState<Vista>('configuracion');
   const { credencialesExisten, credenciales, recargarCredenciales } = useCredenciales();
-  const { motor, cargando: cargandoStockfish, inicializarMotor, error: errorStockfish } = useStockfish();
+  const { cargando: cargandoStockfish, inicializarMotor, error: errorStockfish } = useStockfish();
   
   // Estado del análisis
   const [analizador, setAnalizador] = useState<AnalizadorPartida | null>(null);
@@ -46,9 +40,9 @@ function App() {
   const [errorAnalisis, setErrorAnalisis] = useState<string | null>(null);
   
   // Estado de visualización
-  const [jugadaActual, setJugadaActual] = useState(0);
+  const [_jugadaActual, setJugadaActual] = useState(0);
   const [errorSeleccionado, setErrorSeleccionado] = useState<ErrorDetectado | null>(null);
-  const [mostrandoPanel, setMostrandoPanel] = useState(false);
+  const [_mostrandoPanel, setMostrandoPanel] = useState(false);
 
   // Hook useAnalisis (acepta null durante inicialización)
   const {
@@ -57,7 +51,6 @@ function App() {
     reanudarAnalisis,
     obtenerProgreso,
     estado: estadoAnalisis,
-    error: errorHook
   } = useAnalisis(analizador);
 
   // Determinar vista inicial basado en existencia de credenciales

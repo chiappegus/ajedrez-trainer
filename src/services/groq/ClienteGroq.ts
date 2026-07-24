@@ -103,12 +103,15 @@ export interface RespuestaGroq {
  * ```
  */
 export class ClienteGroq {
+  private readonly apiKey: string;
+
   /**
    * Crea una nueva instancia del cliente Groq
    * 
    * @param apiKey - Clave de API de Groq para autenticación
    */
-  constructor(private readonly apiKey: string) {
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
     if (!apiKey || apiKey.trim() === '') {
       throw new Error('API Key de Groq es requerida');
     }
