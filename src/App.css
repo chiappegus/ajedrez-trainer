@@ -184,3 +184,145 @@
   }
 }
 
+
+
+/* Vista de análisis en progreso */
+.vista-analizando {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.contenido-analisis {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Vista de resultados */
+.vista-resultados {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.contenido-resultados {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.header-acciones {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.analisis-detallado {
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 2px solid #e0e0e0;
+}
+
+.analisis-detallado h2 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
+/* Error de análisis */
+.error-analisis {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  margin: 1rem 0;
+  color: #856404;
+}
+
+.error-icono {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.error-analisis p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Botones secundarios */
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary:disabled {
+  background-color: #c8c8c8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive para vistas nuevas */
+@media (max-width: 768px) {
+  .header-acciones {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .header-acciones button {
+    width: 100%;
+  }
+
+  .contenido-resultados {
+    padding: 1rem;
+  }
+
+  .analisis-detallado h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Mensaje cuando no hay errores */
+.sin-errores-mensaje {
+  text-align: center;
+  padding: 2rem;
+  margin: 1rem 0;
+  background: #f0fdf4;
+  border-radius: 12px;
+  border: 2px solid #86efac;
+}
+
+.sin-errores-mensaje h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #166534;
+}
+
+.sin-errores-mensaje p {
+  color: #15803d;
+  font-size: 1.1rem;
+}

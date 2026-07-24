@@ -503,8 +503,8 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - _Requisitos: 9.1, 9.2, 9.3_
 
 
-- [ ] 18. Implementar indicador de progreso
-  - [~] 18.1 Crear componente `IndicadorProgreso`
+- [x] 18. Implementar indicador de progreso
+  - [x] 18.1 Crear componente `IndicadorProgreso`
     - Crear `src/components/analisis/IndicadorProgreso.tsx`
     - Mostrar barra de progreso visual (porcentaje completado)
     - Mostrar número de jugada actual y total
@@ -512,19 +512,19 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Mostrar número de errores encontrados hasta ahora
     - _Requisitos: 9.1, 9.2, 9.3_
   
-  - [~] 18.2 Conectar indicador con `AnalizadorPartida`
+  - [x] 18.2 Conectar indicador con `AnalizadorPartida`
     - Usar hook personalizado `useAnalisis` para suscribirse a progreso
     - Actualizar UI cada vez que cambie el estado del analizador
     - Mostrar mensaje "Analizando jugada X de Y..."
     - _Requisitos: 9.1, 9.2_
   
-  - [~] 18.3 Implementar botones de pausa y reanudar
+  - [x] 18.3 Implementar botones de pausa y reanudar
     - Botón "Pausar" que llame a `AnalizadorPartida.pausarAnálisis()`
     - Botón "Reanudar" que llame a `AnalizadorPartida.reanudarAnálisis()`
     - Deshabilitar botones según estado (pausado, analizando, completado)
     - _Requisitos: 10.3, 10.4_
 
-- [~] 19. Checkpoint - Verificar flujo completo de análisis
+- [x] 19. Checkpoint - Verificar flujo completo de análisis
   - Confirmar que análisis end-to-end funciona correctamente
   - Verificar que progreso se actualiza en tiempo real
   - Verificar que pausa/reanudar funciona
@@ -533,15 +533,15 @@ Este documento define las tareas de implementación para la funcionalidad de an�
 
 ### Fase 8: Visualización de Tableros
 
-- [ ] 20. Implementar visualizador de tableros de ajedrez
-  - [~] 20.1 Crear componente `VisualizadorTablero`
+- [x] 20. Implementar visualizador de tableros de ajedrez
+  - [x] 20.1 Crear componente `VisualizadorTablero`
     - Crear `src/components/tablero/VisualizadorTablero.tsx`
     - Importar y configurar `Chessboard` de `react-chessboard`
     - Configurar colores Lichess: light square #f0d9b5, dark square #b58863
     - Configurar tamaño responsivo según ancho de ventana
     - _Requisitos: 6.1, 13.1, 13.2, 13.3_
   
-  - [~] 20.2 Implementar highlights de casillas
+  - [x] 20.2 Implementar highlights de casillas
     - Implementar función `generarEstilosHighlight()` que reciba tipo: 'error', 'mejorJugada', 'últimoMovimiento'
     - Error: rojo rgba(255, 0, 0, 0.4)
     - Mejor jugada: verde rgba(0, 255, 0, 0.4)
@@ -550,7 +550,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - _Requisitos: 6.2, 6.3, 13.5_
 
   
-  - [~] 20.3 Configurar propiedades de Chessboard según estilo Lichess
+  - [x] 20.3 Configurar propiedades de Chessboard según estilo Lichess
     - `customDarkSquareStyle`: { backgroundColor: '#b58863' }
     - `customLightSquareStyle`: { backgroundColor: '#f0d9b5' }
     - `arePiecesDraggable`: false (solo visualización)
@@ -559,7 +559,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - `customBoardStyle`: border-radius 4px, box-shadow
     - _Requisitos: 13.2, 13.3, 13.4_
   
-  - [~] 20.4 Implementar función de tamaño adaptativo
+  - [x] 20.4 Implementar función de tamaño adaptativo
     - Crear `calcularAnchoAdaptativo()` que calcule ancho según ventana
     - Móvil (<640px): 90% del ancho de ventana
     - Tablet (640-1024px): máximo 500px
@@ -567,7 +567,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Recalcular al cambiar tamaño de ventana (useEffect con resize listener)
     - _Requisitos: 11.1, 11.2, 11.5_
   
-  - [~] 20.5 Implementar navegación jugada por jugada
+  - [x] 20.5 Implementar navegación jugada por jugada
     - Agregar controles: botón "Anterior", botón "Siguiente", botón "Ir al inicio", botón "Ir al final"
     - Actualizar posición FEN al cambiar jugada
     - Actualizar highlights según contexto (error, mejor jugada, último movimiento)
@@ -582,8 +582,8 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Usar @testing-library/react
     - _Requisitos: 6.1, 6.2, 6.4_
 
-- [ ] 21. Implementar layout dual de tableros
-  - [~] 21.1 Crear contenedor para tableros duales
+- [x] 21. Implementar layout dual de tableros
+  - [x] 21.1 Crear contenedor para tableros duales
     - Crear componente `ContenedorTablerosDuales` o integrar en componente principal
     - Usar flexbox para layout responsive
     - Móvil (<768px): apilar verticalmente (flex-direction: column)
@@ -592,14 +592,14 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - _Requisitos: 11.2, 11.3_
 
   
-  - [~] 21.2 Implementar tablero de partida real (izquierda/superior)
+  - [x] 21.2 Implementar tablero de partida real (izquierda/superior)
     - Mostrar posición después del error detectado
     - Resaltar casillas de la jugada de error en rojo
     - Mostrar título: "Partida Real - Jugada {número}"
     - Mostrar evaluación actual
     - _Requisitos: 6.1, 6.2, 6.3_
   
-  - [~] 21.3 Implementar tablero de alternativa (derecha/inferior)
+  - [x] 21.3 Implementar tablero de alternativa (derecha/inferior)
     - Mostrar posición antes del error (estado previo)
     - Resaltar casillas de la mejor jugada en verde
     - Mostrar título: "Mejor Alternativa"
@@ -607,42 +607,42 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Ocultar si no hay error seleccionado
     - _Requisitos: 7.1, 7.2, 7.3, 7.4, 7.5_
   
-  - [~] 21.4 Sincronizar ambos tableros con navegación
+  - [x] 21.4 Sincronizar ambos tableros con navegación
     - Cuando usuario navega a una jugada con error, actualizar ambos tableros
     - Cuando usuario navega a una jugada sin error, ocultar segundo tablero o mostrar mensaje
     - Mantener highlights consistentes según contexto
     - _Requisitos: 6.4, 6.5, 7.4_
 
-- [ ] 22. Implementar panel de explicaciones
-  - [~] 22.1 Crear componente `PanelExplicaciones`
+- [x] 22. Implementar panel de explicaciones
+  - [x] 22.1 Crear componente `PanelExplicaciones`
     - Crear `src/components/analisis/PanelExplicaciones.tsx`
     - Mostrar texto de explicación concisa generada por IA
     - Mostrar indicador de carga mientras se genera explicación
     - Aplicar animación de fade-in al mostrar explicación
     - _Requisitos: 8.3, 8.4_
   
-  - [~] 22.2 Implementar botón "Profundizar explicación"
+  - [x] 22.2 Implementar botón "Profundizar explicación"
     - Al hacer clic, llamar a `GeneradorExplicaciones.generarExplicaciónExtendida()`
     - Reemplazar explicación concisa con extendida
     - Mostrar indicador de carga durante generación
     - Deshabilitar botón mientras carga
     - _Requisitos: 8.5, 8.6_
   
-  - [~] 22.3 Implementar botón "Mostrar en tablero"
+  - [x] 22.3 Implementar botón "Mostrar en tablero"
     - Al hacer clic, abrir modal con tablero interactivo
     - Mostrar variante de la mejor jugada paso a paso
     - Implementar controles para avanzar/retroceder la variante
     - _Requisitos: 8.7, 8.8_
 
   
-  - [~] 22.4 Implementar navegación entre errores
+  - [x] 22.4 Implementar navegación entre errores
     - Botón "Volver a lista de errores" que cierre panel y muestre lista
     - Implementar lista de errores con navegación rápida
     - Mostrar resumen de cada error: "Jugada X: {turno} - Pérdida {cp}cp"
     - Al hacer clic en un error, navegar a esa jugada y mostrar explicación
     - _Requisitos: 8.10_
 
-- [~] 23. Checkpoint - Verificar visualización completa
+- [x] 23. Checkpoint - Verificar visualización completa
   - Confirmar que tableros duales se muestran correctamente
   - Confirmar que highlights funcionan en ambos tableros
   - Confirmar que navegación sincroniza ambos tableros
@@ -652,43 +652,43 @@ Este documento define las tareas de implementación para la funcionalidad de an�
 
 ### Fase 9: Pantalla de Resultados y Casos Especiales
 
-- [ ] 24. Implementar pantalla de resultados finales
-  - [~] 24.1 Crear componente `ResumenAnálisis`
+- [x] 24. Implementar pantalla de resultados finales
+  - [x] 24.1 Crear componente `ResumenAnálisis`
     - Mostrar estadísticas finales: total de jugadas analizadas, total de errores encontrados
     - Mostrar pérdida promedio de centipawns
     - Mostrar distribución de errores: errores de blancas vs errores de negras
     - Mostrar mayor pérdida y en qué jugada ocurrió
     - _Requisitos: 9.4, 12.2_
   
-  - [~] 24.2 Implementar mensaje para partidas sin errores
+  - [x] 24.2 Implementar mensaje para partidas sin errores
     - Cuando no se detectan errores (array vacío), mostrar mensaje de felicitación
     - "¡Excelente! No se encontraron errores significativos en tu partida."
     - Mostrar pérdida promedio como métrica de rendimiento
     - Si pérdida promedio < 20cp, mostrar insignia "Rendimiento Sólido"
     - _Requisitos: 12.1, 12.2, 12.3_
   
-  - [~] 24.3 Permitir navegación jugada por jugada incluso sin errores
+  - [x] 24.3 Permitir navegación jugada por jugada incluso sin errores
     - Mostrar tablero único con partida completa
     - Permitir revisar todas las jugadas
     - Mostrar evaluaciones de cada posición
     - _Requisitos: 12.4_
 
 
-- [ ] 25. Implementar manejo global de errores
-  - [~] 25.1 Crear jerarquía de errores personalizados
+- [x] 25. Implementar manejo global de errores
+  - [x] 25.1 Crear jerarquía de errores personalizados
     - Crear `src/utils/errores.ts`
     - Definir clase base `ErrorAjedrezTrainer`
     - Definir clases específicas: `ErrorConfiguracion`, `ErrorRed`, `ErrorParseo`, `ErrorAnálisis`
     - Definir códigos de error (CONFIG_001, RED_001, etc.)
     - _Requisitos: Todos (manejo de errores)_
   
-  - [~] 25.2 Implementar función de mensajes de error para usuario
+  - [x] 25.2 Implementar función de mensajes de error para usuario
     - Crear `obtenerMensajeUsuario(error: ErrorAjedrezTrainer): string`
     - Mapear cada código de error a mensaje en castellano
     - Mensajes claros y accionables (qué hacer para resolver)
     - _Requisitos: 1.3, 1.4, 1.5, 1.8, 2.4, 3.4_
   
-  - [~] 25.3 Implementar logger para debugging
+  - [x] 25.3 Implementar logger para debugging
     - Crear `src/utils/logger.ts`
     - Implementar clase `Logger` con niveles: debug, info, warn, error
     - Almacenar eventos en array (máximo 100 eventos)
@@ -696,7 +696,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Implementar método `exportarLogs()` para debugging
     - _Requisitos: Todos (debugging)_
   
-  - [~] 25.4 Integrar manejo de errores en todos los servicios
+  - [x] 25.4 Integrar manejo de errores en todos los servicios
     - Envolver operaciones con try-catch
     - Lanzar errores específicos con códigos
     - Capturar errores en componentes con ErrorBoundary
@@ -712,68 +712,68 @@ Este documento define las tareas de implementación para la funcionalidad de an�
 
 ### Fase 10: Integración Final y Testing E2E
 
-- [ ] 27. Integrar todos los componentes en App principal
-  - [~] 27.1 Crear flujo de navegación principal
+- [x] 27. Integrar todos los componentes en App principal
+  - [x] 27.1 Crear flujo de navegación principal
     - Verificar credenciales al inicio
     - Si faltan, mostrar `ConfiguraciónCredenciales`
     - Si existen, mostrar pantalla principal con botón "Analizar última partida"
     - _Requisitos: 0.1.1, 0.1.8_
 
   
-  - [~] 27.2 Conectar flujo completo de análisis
+  - [x] 27.2 Conectar flujo completo de análisis
     - Al hacer clic en "Analizar", inicializar `AnalizadorPartida`
     - Mostrar `IndicadorProgreso` durante análisis
     - Al completar, mostrar resultados con tableros duales y explicaciones
     - Permitir volver a pantalla principal para nuevo análisis
     - _Requisitos: Todos (flujo completo)_
   
-  - [~] 27.3 Implementar hooks personalizados para gestión de estado
+  - [x] 27.3 Implementar hooks personalizados para gestión de estado
     - Crear `src/hooks/useCredenciales.ts` para gestión de credenciales
     - Crear `src/hooks/useAnalisis.ts` para orquestar análisis
     - Crear `src/hooks/useStockfish.ts` para lazy loading de Stockfish
     - Usar Context API si es necesario para estado global
     - _Requisitos: Todos (arquitectura limpia)_
 
-- [ ] 28. Optimizar rendimiento
-  - [~] 28.1 Implementar lazy loading de Stockfish WASM
+- [x] 28. Optimizar rendimiento
+  - [x] 28.1 Implementar lazy loading de Stockfish WASM
     - Cargar Stockfish solo cuando usuario inicia análisis (no al inicio)
     - Mostrar mensaje "Cargando motor de análisis..."
     - Cachear instancia para análisis futuros
     - _Requisitos: 3.1, 10.5_
   
-  - [~] 28.2 Optimizar re-renders de componentes
+  - [x] 28.2 Optimizar re-renders de componentes
     - Usar `React.memo` en componentes pesados (VisualizadorTablero, PanelExplicaciones)
     - Usar `useMemo` para cálculos costosos (estilos de highlight, tamaños)
     - Usar `useCallback` para callbacks estables
     - _Requisitos: 11.1_
   
-  - [~] 28.3 Implementar debounce para resize de ventana
+  - [x] 28.3 Implementar debounce para resize de ventana
     - Evitar recalcular tamaño de tableros en cada pixel de resize
     - Usar debounce de 200ms
     - _Requisitos: 11.1_
 
-- [ ] 29. Implementar accesibilidad
-  - [~] 29.1 Agregar ARIA labels a elementos interactivos
+- [x] 29. Implementar accesibilidad
+  - [x] 29.1 Agregar ARIA labels a elementos interactivos
     - Tableros: aria-label="Tablero de ajedrez"
     - Botones: aria-label descriptivos
     - Estados de carga: aria-live="polite"
     - _Requisitos: Accesibilidad general_
   
-  - [~] 29.2 Asegurar navegación por teclado
+  - [x] 29.2 Asegurar navegación por teclado
     - Permitir navegar jugadas con flechas del teclado
     - Focus visible en todos los botones
     - Tab order lógico
     - _Requisitos: Accesibilidad general_
 
 
-- [ ] 30. Realizar pruebas end-to-end
-  - [ ]* 30.1 Escribir test E2E del flujo completo feliz
+- [x] 30. Realizar pruebas end-to-end
+  - [x]* 30.1 Escribir test E2E del flujo completo feliz
     - Configurar credenciales → Analizar partida → Ver resultados → Navegar errores
     - Usar herramienta de testing E2E (Playwright o Cypress si está disponible)
     - Alternativamente, prueba manual exhaustiva documentada
     - _Requisitos: Todos (flujo completo)_
   
-  - [ ]* 30.2 Escribir tests E2E de casos de error
+  - [x]* 30.2 Escribir tests E2E de casos de error
     - Usuario no encontrado en Lichess
     - Token inválido
     - Sin partidas disponibles
@@ -781,7 +781,7 @@ Este documento define las tareas de implementación para la funcionalidad de an�
     - Groq API no disponible
     - _Requisitos: 1.3, 1.4, 1.5, 1.8, 8.9_
   
-  - [ ]* 30.3 Realizar pruebas de rendimiento
+  - [x]* 30.3 Realizar pruebas de rendimiento
     - Analizar partida larga (60+ jugadas)
     - Verificar que UI permanece responsiva
     - Verificar que pausa/reanudar funciona

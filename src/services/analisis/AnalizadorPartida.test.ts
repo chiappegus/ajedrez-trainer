@@ -110,7 +110,7 @@ describe('AnalizadorPartida', () => {
       const resultado = await analizador.iniciarAnálisis('testuser');
 
       // Verificar
-      expect(mockClienteLichess.obtenerÚltimaPartida).toHaveBeenCalledWith('testuser');
+      expect(mockClienteLichess.obtenerÚltimaPartida).toHaveBeenCalledWith('testuser', undefined);
       expect(mockParser.parsear).toHaveBeenCalledWith(pgnMock);
       expect(resultado.partida).toEqual(partidaMock);
       expect(resultado.jugadasAnalizadas).toBe(4);

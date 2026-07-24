@@ -1,0 +1,130 @@
+.selector-analisis {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.selector-usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f0f7ff;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.usuario-icono {
+  font-size: 1.2rem;
+}
+
+.usuario-nombre strong {
+  color: #2563eb;
+}
+
+.selector-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.selector-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.selector-grupo label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.selector-grupo select {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.selector-grupo select:focus {
+  outline: none;
+  border-color: #7c3aed;
+}
+
+.selector-radio-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.radio-option:hover {
+  border-color: #7c3aed;
+}
+
+.radio-option.selected {
+  border-color: #7c3aed;
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+.radio-option input[type="radio"] {
+  display: none;
+}
+
+.selector-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #fefce8;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #713f12;
+}
+
+.info-icono {
+  font-size: 1rem;
+}
+
+.selector-analisis .btn-analizar {
+  padding: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.selector-analisis .btn-analizar:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.selector-analisis .btn-analizar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -140,30 +140,25 @@ describe('ClienteLichess', () => {
   });
 
   describe('obtenerÚltimaPartida', () => {
-    const pgnMock = '1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 *';
-    const ndjsonRespuesta = JSON.stringify({
-      id: 'abc123',
-      pgn: pgnMock,
-      rated: true,
-    });
+    const pgnMock = '[Event "Rated Blitz game"]\n[Site "https://lichess.org/abc123"]\n\n1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 *';
 
     it('debe retornar PGN de la última partida', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => ndjsonRespuesta,
+        text: async () => pgnMock,
       });
 
       const pgn = await cliente.obtenerÚltimaPartida();
 
       expect(pgn).toBe(pgnMock);
       expect(global.fetch).toHaveBeenCalledWith(
-        `https://lichess.org/api/games/user/${usuarioPrueba}`,
+        `https://lichess.org/api/games/user/${usuarioPrueba}?max=1`,
         expect.objectContaining({
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${tokenPrueba}`,
-            'Accept': 'application/x-ndjson',
+            'Accept': 'application/x-chess-pgn',
           },
         })
       );
@@ -173,14 +168,14 @@ describe('ClienteLichess', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => ndjsonRespuesta,
+        text: async () => pgnMock,
       });
 
       const usuarioCustom = 'otrousuario';
       await cliente.obtenerÚltimaPartida(usuarioCustom);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        `https://lichess.org/api/games/user/${usuarioCustom}`,
+        `https://lichess.org/api/games/user/${usuarioCustom}?max=1`,
         expect.anything()
       );
     });
@@ -234,42 +229,32 @@ describe('ClienteLichess', () => {
       });
 
       await expect(cliente.obtenerÚltimaPartida()).rejects.toThrow(
-        'No se encontraron partidas para este usuario'
+        'No se encontraron partidas de ese tipo para este usuario'
       );
     });
 
-    it('debe lanzar error cuando la partida no contiene PGN', async () => {
-      const partidaSinPGN = JSON.stringify({
-        id: 'abc123',
-        rated: true,
-        // Sin campo pgn
-      });
-
+    it('debe lanzar error cuando la respuesta es solo espacios en blanco', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => partidaSinPGN,
+        text: async () => '   \n  \n  ',
       });
 
       await expect(cliente.obtenerÚltimaPartida()).rejects.toThrow(
-        'La partida no contiene datos PGN'
+        'No se encontraron partidas de ese tipo para este usuario'
       );
     });
 
-    it('debe manejar respuesta NDJSON con múltiples partidas y retornar solo la primera', async () => {
-      const partida1 = JSON.stringify({ id: '1', pgn: '1. e4 e5 *' });
-      const partida2 = JSON.stringify({ id: '2', pgn: '1. d4 d5 *' });
-      const ndjsonMultiple = `${partida1}\n${partida2}`;
-
+    it('debe recortar whitespace del PGN retornado', async () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => ndjsonMultiple,
+        text: async () => `\n${pgnMock}\n\n`,
       });
 
       const pgn = await cliente.obtenerÚltimaPartida();
 
-      expect(pgn).toBe('1. e4 e5 *');
+      expect(pgn).toBe(pgnMock);
     });
 
     it('debe lanzar error con código genérico para otros errores de API', async () => {
@@ -289,7 +274,7 @@ describe('ClienteLichess', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify({ pgn: '1. e4 *' }),
+        text: async () => '1. e4 e5 *',
         json: async () => ({ id: 'test' }),
       });
 
@@ -326,7 +311,7 @@ describe('ClienteLichess', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => JSON.stringify({ pgn: '1. e4 *' }),
+        text: async () => '1. e4 e5 *',
       });
 
       await cliente.obtenerÚltimaPartida();

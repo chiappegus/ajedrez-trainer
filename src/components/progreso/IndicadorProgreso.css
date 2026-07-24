@@ -1,0 +1,215 @@
+/**
+ * Estilos para el componente IndicadorProgreso
+ * Feature: lichess-game-analysis
+ * Valida: Requisitos 9.1, 9.2, 9.3, 11.1, 11.2, 11.3, 11.4
+ */
+
+.indicador-progreso {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Header con título y porcentaje */
+.progreso-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.progreso-titulo {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.progreso-porcentaje {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Barra de progreso visual */
+.progreso-barra-contenedor {
+  width: 100%;
+  height: 12px;
+  background: var(--code-bg);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.progreso-barra-relleno {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 100%);
+  border-radius: 6px;
+  transition: width 0.3s ease-out;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Animación de pulso cuando está analizando */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.progreso-barra-relleno::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Información detallada */
+.progreso-detalles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.progreso-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progreso-label {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.progreso-valor {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-h);
+  font-variant-numeric: tabular-nums;
+}
+
+.progreso-errores {
+  color: #ef4444;
+}
+
+@media (prefers-color-scheme: dark) {
+  .progreso-errores {
+    color: #f87171;
+  }
+}
+
+/* Controles de pausa/reanudar */
+.progreso-controles {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.progreso-controles .btn {
+  min-width: 140px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: var(--sans);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  /* Tamaño mínimo de objetivo táctil: 44x44px (Requisito 11.4) */
+  min-height: 44px;
+}
+
+.progreso-controles .btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.progreso-controles .btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.progreso-controles .btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.progreso-controles .btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.progreso-controles .btn-secondary {
+  background: var(--code-bg);
+  color: var(--text-h);
+  border: 1px solid var(--border);
+}
+
+/* Responsivo para móviles (Requisitos 11.1, 11.2, 11.3) */
+@media (max-width: 768px) {
+  .indicador-progreso {
+    padding: 20px 16px;
+    margin: 16px;
+  }
+
+  .progreso-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .progreso-titulo {
+    font-size: 16px;
+  }
+
+  .progreso-porcentaje {
+    font-size: 20px;
+    align-self: flex-end;
+  }
+
+  .progreso-detalles {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .progreso-controles {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .progreso-controles .btn {
+    width: 100%;
+  }
+}
+
+/* Soporte para pantallas de alto DPI (Retina) - Requisito 11.5 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .progreso-barra-contenedor {
+    border: 0.5px solid var(--border);
+  }
+}
+
+/* Rango de ancho completo: 320px - 1920px (Requisito 11.1) */
+@media (min-width: 320px) and (max-width: 1920px) {
+  .indicador-progreso {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

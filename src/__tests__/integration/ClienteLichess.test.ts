@@ -202,15 +202,14 @@ describe('ClienteLichess - Pruebas de Integración', () => {
   });
 
   describe('obtenerÚltimaPartida', () => {
-    it('debe obtener última partida en formato PGN con usuario válido (NDJSON)', async () => {
-      // Arrange - Simular respuesta NDJSON de Lichess
-      const partidaNDJSON = `{"id":"abc123","pgn":"[Event \\"Rated Blitz\\"]\\n[White \\"Player1\\"]\\n[Black \\"Player2\\"]\\n\\n1. e4 e5 2. Nf3 Nc6 3. Bb5 *"}
-{"id":"def456","pgn":"[Event \\"Casual Game\\"]\\n\\n1. d4 d5 *"}`;
+    it('debe obtener última partida en formato PGN con usuario válido', async () => {
+      // Arrange - Simular respuesta PGN de Lichess
+      const pgnRespuesta = `[Event "Rated Blitz"]\n[White "Player1"]\n[Black "Player2"]\n\n1. e4 e5 2. Nf3 Nc6 3. Bb5 *`;
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => partidaNDJSON,
+        text: async () => pgnRespuesta,
       });
       global.fetch = mockFetch;
 
@@ -223,12 +222,12 @@ describe('ClienteLichess - Pruebas de Integración', () => {
       expect(pgn).toContain('[Event "Rated Blitz"]');
       expect(pgn).toContain('1. e4 e5');
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://lichess.org/api/games/user/testuser',
+        'https://lichess.org/api/games/user/testuser?max=1',
         expect.objectContaining({
           method: 'GET',
           headers: {
             'Authorization': 'Bearer lip_valid_token',
-            'Accept': 'application/x-ndjson',
+            'Accept': 'application/x-chess-pgn',
           },
         })
       );
@@ -236,12 +235,12 @@ describe('ClienteLichess - Pruebas de Integración', () => {
 
     it('debe usar el nombre de usuario del constructor si no se proporciona parámetro', async () => {
       // Arrange
-      const partidaNDJSON = `{"id":"xyz789","pgn":"1. e4 e5 *"}`;
+      const pgnRespuesta = `1. e4 e5 *`;
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => partidaNDJSON,
+        text: async () => pgnRespuesta,
       });
       global.fetch = mockFetch;
 
@@ -253,7 +252,7 @@ describe('ClienteLichess - Pruebas de Integración', () => {
       // Assert
       expect(pgn).toContain('1. e4 e5');
       expect(mockFetch).toHaveBeenCalledWith(
-        'https://lichess.org/api/games/user/defaultuser',
+        'https://lichess.org/api/games/user/defaultuser?max=1',
         expect.anything()
       );
     });
@@ -285,7 +284,7 @@ describe('ClienteLichess - Pruebas de Integración', () => {
     });
 
     it('debe lanzar error cuando el usuario no tiene partidas (respuesta vacía)', async () => {
-      // Arrange - NDJSON vacío o solo con líneas vacías
+      // Arrange - Respuesta vacía
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
@@ -297,7 +296,7 @@ describe('ClienteLichess - Pruebas de Integración', () => {
 
       // Act & Assert
       await expect(cliente.obtenerÚltimaPartida('usersinjuegos')).rejects.toThrow(
-        'No se encontraron partidas para este usuario'
+        'No se encontraron partidas de ese tipo para este usuario'
       );
     });
 
@@ -333,16 +332,14 @@ describe('ClienteLichess - Pruebas de Integración', () => {
       );
     });
 
-    it('debe manejar correctamente respuesta NDJSON con múltiples líneas', async () => {
-      // Arrange - Múltiples partidas en NDJSON
-      const partidasNDJSON = `{"id":"game1","pgn":"[Event \\"Blitz\\"]\\n\\n1. e4 e5 *"}
-{"id":"game2","pgn":"[Event \\"Rapid\\"]\\n\\n1. d4 d5 *"}
-{"id":"game3","pgn":"[Event \\"Classical\\"]\\n\\n1. c4 c5 *"}`;
+    it('debe retornar el PGN trimmed correctamente', async () => {
+      // Arrange - PGN con whitespace extra
+      const pgnRespuesta = `\n[Event "Blitz"]\n\n1. e4 e5 *\n\n`;
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => partidasNDJSON,
+        text: async () => pgnRespuesta,
       });
       global.fetch = mockFetch;
 
@@ -351,33 +348,11 @@ describe('ClienteLichess - Pruebas de Integración', () => {
       // Act
       const pgn = await cliente.obtenerÚltimaPartida('testuser');
 
-      // Assert - Debe retornar solo la PRIMERA partida (más reciente)
-      expect(pgn).toContain('[Event "Blitz"]');
-      expect(pgn).toContain('1. e4 e5');
-      expect(pgn).not.toContain('[Event "Rapid"]');
-      expect(pgn).not.toContain('[Event "Classical"]');
+      // Assert - Debe retornar PGN sin whitespace al inicio/final
+      expect(pgn).toBe('[Event "Blitz"]\n\n1. e4 e5 *');
     });
 
-    it('debe lanzar error cuando la partida no contiene campo pgn', async () => {
-      // Arrange - JSON sin campo pgn
-      const partidaNDJSON = `{"id":"game1","moves":"e4 e5"}`;
-
-      const mockFetch = vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        text: async () => partidaNDJSON,
-      });
-      global.fetch = mockFetch;
-
-      const cliente = new ClienteLichess('lip_token');
-
-      // Act & Assert
-      await expect(cliente.obtenerÚltimaPartida('testuser')).rejects.toThrow(
-        'La partida no contiene datos PGN'
-      );
-    });
-
-    it('debe manejar timeout correctamente (>10 segundos)', async () => {
+    it('debe manejar timeout correctamente (>15 segundos)', async () => {
       // Arrange
       const mockFetch = vi.fn().mockImplementation(() => {
         return new Promise((_, reject) => {
@@ -394,39 +369,14 @@ describe('ClienteLichess - Pruebas de Integración', () => {
       await expect(cliente.obtenerÚltimaPartida('testuser')).rejects.toThrow();
     });
 
-    it('debe filtrar correctamente líneas vacías en NDJSON', async () => {
-      // Arrange - NDJSON con líneas vacías intercaladas
-      const partidaNDJSON = `
-{"id":"game1","pgn":"1. e4 e5 *"}
-
-{"id":"game2","pgn":"1. d4 d5 *"}
-
-`;
-
-      const mockFetch = vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        text: async () => partidaNDJSON,
-      });
-      global.fetch = mockFetch;
-
-      const cliente = new ClienteLichess('lip_token');
-
-      // Act
-      const pgn = await cliente.obtenerÚltimaPartida('testuser');
-
-      // Assert - Debe obtener la primera partida válida
-      expect(pgn).toContain('1. e4 e5');
-    });
-
-    it('debe incluir encabezado Accept correcto para NDJSON', async () => {
+    it('debe incluir encabezado Accept correcto para PGN', async () => {
       // Arrange
-      const partidaNDJSON = `{"id":"test","pgn":"1. e4 *"}`;
+      const pgnRespuesta = `1. e4 e5 *`;
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => partidaNDJSON,
+        text: async () => pgnRespuesta,
       });
       global.fetch = mockFetch;
 
@@ -437,17 +387,17 @@ describe('ClienteLichess - Pruebas de Integración', () => {
 
       // Assert - Verificar que se envió el header correcto
       const llamada = mockFetch.mock.calls[0];
-      expect(llamada[1].headers['Accept']).toBe('application/x-ndjson');
+      expect(llamada[1].headers['Accept']).toBe('application/x-chess-pgn');
     });
 
-    it('debe configurar timeout de 10 segundos en la petición', async () => {
+    it('debe configurar timeout en la petición', async () => {
       // Arrange
-      const partidaNDJSON = `{"id":"test","pgn":"1. e4 *"}`;
+      const pgnRespuesta = `1. e4 e5 *`;
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => partidaNDJSON,
+        text: async () => pgnRespuesta,
       });
       global.fetch = mockFetch;
 
@@ -463,14 +413,14 @@ describe('ClienteLichess - Pruebas de Integración', () => {
   });
 
   describe('Casos de borde y edge cases', () => {
-    it('debe manejar PGN con caracteres especiales y escapados', async () => {
+    it('debe manejar PGN con caracteres especiales', async () => {
       // Arrange
-      const partidaNDJSON = `{"id":"special","pgn":"[Event \\"Test\\\\nGame\\"]\\n\\n1. e4 e5 { Comentario con \\"comillas\\" } *"}`;
+      const pgnRespuesta = `[Event "Test\\nGame"]\n\n1. e4 e5 { Comentario con "comillas" } *`;
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        text: async () => partidaNDJSON,
+        text: async () => pgnRespuesta,
       });
       global.fetch = mockFetch;
 
@@ -502,23 +452,6 @@ describe('ClienteLichess - Pruebas de Integración', () => {
           `Error de API de Lichess: ${codigo}`
         );
       }
-    });
-
-    it('debe manejar JSON inválido en respuesta NDJSON', async () => {
-      // Arrange - JSON malformado
-      const partidaNDJSON = `{"id":"game1","pgn":"1. e4 *"`;
-
-      const mockFetch = vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        text: async () => partidaNDJSON,
-      });
-      global.fetch = mockFetch;
-
-      const cliente = new ClienteLichess('lip_token');
-
-      // Act & Assert
-      await expect(cliente.obtenerÚltimaPartida('testuser')).rejects.toThrow();
     });
   });
 });

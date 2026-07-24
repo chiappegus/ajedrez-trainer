@@ -28,6 +28,7 @@ import type { Partida } from '../../types/partida';
 interface EstadoAnalizador {
   estado: 'inactivo' | 'analizando' | 'pausado' | 'completado' | 'error';
   jugadaActual: number;
+  totalJugadas: number;
   evaluaciones: Map<number, Evaluación>;
   errores: ErrorDetectado[];
   tiempoInicio: number;
@@ -73,6 +74,7 @@ export class AnalizadorPartida {
     this.estado = {
       estado: 'inactivo',
       jugadaActual: 0,
+      totalJugadas: 0,
       evaluaciones: new Map(),
       errores: [],
       tiempoInicio: 0,
@@ -96,12 +98,13 @@ export class AnalizadorPartida {
    * @returns Resultado completo del análisis
    * @throws Error si falla algún paso del proceso
    */
-  async iniciarAnálisis(nombreUsuario: string): Promise<ResultadoAnálisis> {
+  async iniciarAnálisis(nombreUsuario: string, opciones?: { tipoPartida?: string; limiteErrores?: number }): Promise<ResultadoAnálisis> {
     try {
       // Resetear estado
       this.estado = {
         estado: 'analizando',
         jugadaActual: 0,
+        totalJugadas: 0,
         evaluaciones: new Map(),
         errores: [],
         tiempoInicio: Date.now(),
@@ -110,13 +113,31 @@ export class AnalizadorPartida {
       };
 
       // Paso 1: Obtener PGN desde Lichess
-      const pgn = await this.clienteLichess.obtenerÚltimaPartida(nombreUsuario);
+      const pgn = await this.clienteLichess.obtenerÚltimaPartida(nombreUsuario, opciones?.tipoPartida);
 
       // Paso 2: Parsear PGN a objeto estructurado
       const partida = this.parser.parsear(pgn);
 
+      // Establecer total de jugadas para el progreso
+      this.estado.totalJugadas = partida.jugadas.length;
+
+      // Determinar color del jugador
+      const colorJugador: 'white' | 'black' = 
+        partida.metadatos.blancas.toLowerCase() === nombreUsuario.toLowerCase() 
+          ? 'white' 
+          : 'black';
+
       // Paso 3: Analizar jugada por jugada
       await this.analizarJugadas(partida);
+
+      // Paso 3.4: Filtrar solo errores del jugador (no del oponente)
+      this.estado.errores = this.estado.errores.filter(e => e.turno === colorJugador);
+
+      // Paso 3.5: Limitar a los errores más graves
+      if (opciones?.limiteErrores && this.estado.errores.length > opciones.limiteErrores) {
+        this.estado.errores.sort((a, b) => b.pérdidaCentipawns - a.pérdidaCentipawns);
+        this.estado.errores = this.estado.errores.slice(0, opciones.limiteErrores);
+      }
 
       // Paso 4: Generar explicaciones para errores detectados
       await this.generarExplicaciones();
@@ -132,6 +153,7 @@ export class AnalizadorPartida {
 
       return {
         partida,
+        colorJugador,
         erroresDetectados: this.estado.errores,
         pérdidaPromedioCentipawns: pérdidaPromedio,
         jugadasAnalizadas: this.estado.jugadaActual,
@@ -176,13 +198,13 @@ export class AnalizadorPartida {
    */
   obtenerProgreso(): ProgresoAnálisis {
     const tiempoPromedio = this.calcularTiempoPromedioPorJugada();
-    const jugadasRestantes = this.estado.evaluaciones.size - this.estado.jugadaActual;
+    const jugadasRestantes = this.estado.totalJugadas - this.estado.jugadaActual;
     const tiempoRestante = jugadasRestantes * tiempoPromedio;
 
     return {
       estado: this.estado.estado,
       jugadaActual: this.estado.jugadaActual,
-      totalJugadas: this.estado.evaluaciones.size || 0,
+      totalJugadas: this.estado.totalJugadas,
       erroresEncontrados: this.estado.errores.length,
       tiempoPromedioPorJugada: tiempoPromedio,
       tiempoRestanteEstimado: tiempoRestante

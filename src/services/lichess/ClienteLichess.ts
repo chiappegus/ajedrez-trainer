@@ -135,53 +135,65 @@ export class ClienteLichess {
    * // Retorna: "1. e4 e5 2. Nf3 Nc6 ..."
    * ```
    */
-  async obtenerÚltimaPartida(nombreUsuario?: string): Promise<string> {
+  async obtenerÚltimaPartida(nombreUsuario?: string, tipoPartida?: string): Promise<string> {
     const usuario = nombreUsuario || this.nombreUsuario;
     
     if (!usuario) {
       throw new Error('Nombre de usuario no proporcionado');
     }
 
-    const url = `${LICHESS_BASE_URL}${ENDPOINTS.partidasUsuario(usuario)}`;
-
-    const respuesta = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Accept': 'application/x-ndjson', // NDJSON format
-      },
-      signal: AbortSignal.timeout(10000), // 10 segundos timeout
-    });
-
-    if (!respuesta.ok) {
-      if (respuesta.status === 404) {
-        throw new Error('Nombre de usuario no encontrado');
-      }
-      if (respuesta.status === 401) {
-        throw new Error('Token de API inválido o expirado');
-      }
-      if (respuesta.status === 429) {
-        throw new Error('Rate limit excedido. Por favor espera un minuto e intenta de nuevo');
-      }
-      throw new Error(`Error de API de Lichess: ${respuesta.status}`);
+    let url = `${LICHESS_BASE_URL}${ENDPOINTS.partidasUsuario(usuario)}?max=1`;
+    if (tipoPartida) {
+      url += `&perfType=${tipoPartida}`;
     }
-
-    const textoCompleto = await respuesta.text();
-
-    // NDJSON: cada línea es un JSON de partida
-    const líneas = textoCompleto.trim().split('\n').filter(linea => linea.length > 0);
-
-    if (líneas.length === 0) {
-      throw new Error('No se encontraron partidas para este usuario');
-    }
-
-    // Primera línea es la partida más reciente
-    const partidaJSON = JSON.parse(líneas[0]);
     
-    if (!partidaJSON.pgn) {
-      throw new Error('La partida no contiene datos PGN');
-    }
+    console.log('[DEBUG Lichess] Fetching URL:', url);
+    console.log('[DEBUG Lichess] Token starts with:', this.token.substring(0, 8) + '...');
 
-    return partidaJSON.pgn;
+    try {
+      const respuesta = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': 'application/x-chess-pgn',
+        },
+        signal: AbortSignal.timeout(15000),
+      });
+
+      console.log('[DEBUG Lichess] Response status:', respuesta.status);
+      console.log('[DEBUG Lichess] Response ok:', respuesta.ok);
+
+      if (!respuesta.ok) {
+        if (respuesta.status === 404) {
+          throw new Error('Nombre de usuario no encontrado');
+        }
+        if (respuesta.status === 401) {
+          throw new Error('Token de API inválido o expirado');
+        }
+        if (respuesta.status === 429) {
+          throw new Error('Rate limit excedido. Por favor espera un minuto e intenta de nuevo');
+        }
+        throw new Error(`Error de API de Lichess: ${respuesta.status}`);
+      }
+
+      console.log('[DEBUG Lichess] Reading response text...');
+      const pgn = await respuesta.text();
+      console.log('[DEBUG Lichess] Response text length:', pgn.length);
+      console.log('[DEBUG Lichess] PGN (first 200 chars):', pgn.substring(0, 200));
+
+      const pgnTrimmed = pgn.trim();
+
+      if (!pgnTrimmed) {
+        throw new Error('No tenés partidas de ese tipo. Probá con otro formato de juego.');
+      }
+
+      console.log('[DEBUG Lichess] PGN obtenido exitosamente');
+      return pgnTrimmed;
+    } catch (error) {
+      console.error('[DEBUG Lichess] FETCH ERROR:', error);
+      console.error('[DEBUG Lichess] Error name:', (error as Error).name);
+      console.error('[DEBUG Lichess] Error message:', (error as Error).message);
+      throw error;
+    }
   }
 }

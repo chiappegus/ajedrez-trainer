@@ -11,6 +11,7 @@
  * Valida: Requisitos 4.1, 4.2
  */
 
+import { Chess } from 'chess.js';
 import type { Evaluación } from '../../types/evaluacion';
 import type { MotorStockfish } from '../stockfish/MotorStockfish';
 import { CacheEvaluaciones } from '../cache/CacheEvaluaciones';
@@ -76,17 +77,25 @@ export class EvaluadorJugadas {
     const tiempoInicio = Date.now();
 
     // Delegar análisis al motor Stockfish
-    const resultadoMotor = await this.motor.analizarPosición(fen, profundidadFinal);
+    const resultadoMotor = await this.motor.analizarPosicion(fen, profundidadFinal);
 
     const tiempoEvaluación = Date.now() - tiempoInicio;
 
-    // Construir objeto Evaluación
+    // Normalizar evaluación: Stockfish evalúa desde perspectiva del lado que mueve
+    // Pero nuestro sistema usa convención: positivo = ventaja blancas, negativo = ventaja negras
+    const turnoNegras = fen.split(' ')[1] === 'b';
+    const centipawnsNormalizados = turnoNegras ? -resultadoMotor.evaluacion : resultadoMotor.evaluacion;
+    const mateNormalizado = resultadoMotor.mate !== undefined
+      ? (turnoNegras ? -resultadoMotor.mate : resultadoMotor.mate)
+      : undefined;
+
+    // Construir objeto Evaluación (siempre positivo = ventaja blancas)
     const evaluación: Evaluación = {
       fen,
-      centipawns: resultadoMotor.evaluación,
-      mate: resultadoMotor.mate,
+      centipawns: centipawnsNormalizados,
+      mate: mateNormalizado,
       mejorJugada: resultadoMotor.mejorJugada,
-      mejorJugadaSAN: resultadoMotor.mejorJugadaSAN || resultadoMotor.mejorJugada, // Fallback si no hay SAN
+      mejorJugadaSAN: resultadoMotor.mejorJugadaSAN || this.uciASan(fen, resultadoMotor.mejorJugada) || resultadoMotor.mejorJugada,
       profundidad: resultadoMotor.profundidad,
       tiempoEvaluación
     };
@@ -135,5 +144,23 @@ export class EvaluadorJugadas {
    */
   obtenerEstadisticasCache(): { tamaño: number; limite: number; utilizacion: number } {
     return this.cache.obtenerEstadisticas();
+  }
+
+  /**
+   * Convierte un movimiento UCI (ej: "g1f1") a notación SAN (ej: "Kf1")
+   * usando chess.js para validar el movimiento en la posición dada.
+   */
+  private uciASan(fen: string, uci: string): string | null {
+    try {
+      const chess = new Chess(fen);
+      const from = uci.substring(0, 2);
+      const to = uci.substring(2, 4);
+      const promotion = uci.length > 4 ? uci.substring(4, 5) : undefined;
+
+      const move = chess.move({ from, to, promotion });
+      return move ? move.san : null;
+    } catch {
+      return null;
+    }
   }
 }

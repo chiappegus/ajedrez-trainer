@@ -38,6 +38,7 @@ export class GestorCredenciales {
       // Desencriptar tokens
       return {
         nombreUsuario: almacenadas.nombreUsuario,
+        username: almacenadas.nombreUsuario, // Alias para compatibilidad
         tokenLichess: this.desencriptarToken(almacenadas.tokenLichessEncriptado),
         apiKeyGroq: this.desencriptarToken(almacenadas.apiKeyGroqEncriptada)
       };

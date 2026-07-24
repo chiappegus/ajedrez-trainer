@@ -42,47 +42,58 @@ describe('GeneradorExplicaciones', () => {
   });
 
   describe('generarExplicaciónBásica', () => {
-    it('debe generar explicación básica sin usar IA', () => {
+    it('debe generar explicación básica con figurines Unicode', () => {
       const explicación = generador.generarExplicaciónBásica(errorEjemplo);
 
-      // Verificar que la explicación contiene información clave
-      expect(explicación).toContain('Jugada 15');
-      expect(explicación).toContain('Blancas');
-      expect(explicación).toContain('Qxf7??');
-      expect(explicación).toContain('350 centipawns');
+      // Verificar que usa figurine para la dama (Q -> ♛)
+      expect(explicación).toContain('♛xf7??');
+      // O-O no se modifica
       expect(explicación).toContain('O-O');
+      // Usa "jugaste" en segunda persona
+      expect(explicación).toContain('jugaste');
+      // Muestra pérdida en cp
+      expect(explicación).toContain('350 cp');
     });
 
-    it('debe generar explicación para error de negras', () => {
-      const errorNegras: ErrorDetectado = {
+    it('debe mostrar "mate" cuando la pérdida es >= 9000', () => {
+      const errorMate: ErrorDetectado = {
         ...errorEjemplo,
-        turno: 'black',
-        jugadaRealizada: {
-          ...errorEjemplo.jugadaRealizada,
-          turno: 'black'
-        }
+        pérdidaCentipawns: 9500
       };
 
-      const explicación = generador.generarExplicaciónBásica(errorNegras);
-
-      expect(explicación).toContain('Negras');
+      const explicación = generador.generarExplicaciónBásica(errorMate);
+      expect(explicación).toContain('mate');
+      expect(explicación).not.toContain('9500');
     });
 
-    it('debe formatear pérdida de centipawns correctamente', () => {
+    it('debe redondear pérdida de centipawns', () => {
       const errorConPérdidaDecimal: ErrorDetectado = {
         ...errorEjemplo,
         pérdidaCentipawns: 123.456
       };
 
       const explicación = generador.generarExplicaciónBásica(errorConPérdidaDecimal);
+      expect(explicación).toContain('123 cp');
+    });
 
-      // Debe redondear a entero
-      expect(explicación).toContain('123 centipawns');
+    it('debe manejar jugadas de peón sin figurine', () => {
+      const errorPeon: ErrorDetectado = {
+        ...errorEjemplo,
+        jugadaRealizada: {
+          ...errorEjemplo.jugadaRealizada,
+          jugadaSAN: 'e4'
+        },
+        mejorJugadaSAN: 'd5'
+      };
+
+      const explicación = generador.generarExplicaciónBásica(errorPeon);
+      expect(explicación).toContain('e4');
+      expect(explicación).toContain('d5');
     });
   });
 
   describe('generarExplicaciónConcisa', () => {
-    it('debe llamar a ClienteGroq con parámetros correctos', async () => {
+    it('debe llamar a ClienteGroq con modelo llama-3.3-70b-versatile', async () => {
       const respuestaMock = {
         choices: [{
           message: {
@@ -100,18 +111,17 @@ describe('GeneradorExplicaciones', () => {
 
       // Verificar parámetros de la llamada
       const llamada = vi.mocked(clienteGroqMock.chatCompletion).mock.calls[0][0];
-      expect(llamada.modelo).toBe('llama-3.1-8b-instant');
+      expect(llamada.modelo).toBe('llama-3.3-70b-versatile');
       expect(llamada.mensajes).toHaveLength(2);
       expect(llamada.mensajes[0].rol).toBe('system');
       expect(llamada.mensajes[1].rol).toBe('user');
-      expect(llamada.longitudMáxima).toBe(500); // ~150 palabras
-      expect(llamada.temperatura).toBe(0.7);
+      expect(llamada.longitudMáxima).toBe(800);
+      expect(llamada.temperatura).toBe(0.6);
 
-      // Verificar contenido del prompt de usuario
+      // Verificar contenido del prompt usa figurines
       const promptUsuario = llamada.mensajes[1].contenido;
-      expect(promptUsuario).toContain('Qxf7??');
+      expect(promptUsuario).toContain('♛xf7??');
       expect(promptUsuario).toContain('O-O');
-      expect(promptUsuario).toContain('350 centipawns');
 
       // Verificar que retorna la explicación de Groq
       expect(explicación).toBe('Explicación concisa generada por IA');
@@ -147,16 +157,14 @@ describe('GeneradorExplicaciones', () => {
 
       // Verificar parámetros de la llamada
       const llamada = vi.mocked(clienteGroqMock.chatCompletion).mock.calls[0][0];
-      expect(llamada.modelo).toBe('llama-3.1-8b-instant');
-      expect(llamada.longitudMáxima).toBe(1000); // ~300 palabras
-      expect(llamada.temperatura).toBe(0.7);
+      expect(llamada.modelo).toBe('llama-3.3-70b-versatile');
+      expect(llamada.longitudMáxima).toBe(1200);
+      expect(llamada.temperatura).toBe(0.6);
 
-      // Verificar que el prompt extendido incluye más contexto
+      // Verificar que el prompt extendido pide ~300 palabras
       const promptUsuario = llamada.mensajes[1].contenido;
-      expect(promptUsuario).toContain('Analiza en profundidad');
-      expect(promptUsuario).toContain('Evaluación antes del error: 50');
-      expect(promptUsuario).toContain('Evaluación después del error: -300');
       expect(promptUsuario).toContain('300 palabras');
+      expect(promptUsuario).toContain('♛xf7??');
 
       // Verificar que retorna la explicación de Groq
       expect(explicación).toBe('Explicación extendida detallada generada por IA con análisis táctico completo');
@@ -174,7 +182,7 @@ describe('GeneradorExplicaciones', () => {
   });
 
   describe('Integración con prompt del sistema', () => {
-    it('debe incluir prompt del sistema en todas las llamadas', async () => {
+    it('debe incluir prompt del sistema con reglas de figurines Unicode', async () => {
       const respuestaMock = {
         choices: [{ message: { content: 'Respuesta' } }]
       };
@@ -186,26 +194,33 @@ describe('GeneradorExplicaciones', () => {
       const llamada = vi.mocked(clienteGroqMock.chatCompletion).mock.calls[0][0];
       const mensajeSistema = llamada.mensajes[0];
 
-      // Verificar que el mensaje del sistema establece el rol de entrenador
+      // Verificar que el mensaje del sistema tiene las reglas correctas
       expect(mensajeSistema.rol).toBe('system');
-      expect(mensajeSistema.contenido).toContain('entrenador de ajedrez');
       expect(mensajeSistema.contenido).toContain('castellano');
-      expect(mensajeSistema.contenido).toContain('educativo');
+      expect(mensajeSistema.contenido).toContain('figurine Unicode');
+      expect(mensajeSistema.contenido).toContain('♚');
+      expect(mensajeSistema.contenido).toContain('segunda persona');
+    });
+
+    it('debe instruir al modelo a solo hablar del error del estudiante', async () => {
+      const respuestaMock = {
+        choices: [{ message: { content: 'Respuesta' } }]
+      };
+
+      vi.mocked(clienteGroqMock.chatCompletion).mockResolvedValue(respuestaMock as any);
+
+      await generador.generarExplicaciónConcisa(errorEjemplo);
+
+      const llamada = vi.mocked(clienteGroqMock.chatCompletion).mock.calls[0][0];
+      const mensajeSistema = llamada.mensajes[0];
+
+      expect(mensajeSistema.contenido).toContain('Solo habla de la jugada del estudiante');
+      expect(mensajeSistema.contenido).toContain('NO analices la respuesta del oponente');
     });
   });
 
   describe('Casos especiales', () => {
-    it('debe manejar errores con pérdida muy grande', () => {
-      const errorGrande: ErrorDetectado = {
-        ...errorEjemplo,
-        pérdidaCentipawns: 2000
-      };
-
-      const explicación = generador.generarExplicaciónBásica(errorGrande);
-      expect(explicación).toContain('2000 centipawns');
-    });
-
-    it('debe manejar jugadas con notación especial', () => {
+    it('debe manejar jugadas con notación de enroque', () => {
       const errorEnroque: ErrorDetectado = {
         ...errorEjemplo,
         jugadaRealizada: {
@@ -219,7 +234,23 @@ describe('GeneradorExplicaciones', () => {
 
       const explicación = generador.generarExplicaciónBásica(errorEnroque);
       expect(explicación).toContain('O-O-O');
-      expect(explicación).toContain('Nf3');
+      // Nf3 se convierte a figurine ♞f3
+      expect(explicación).toContain('♞f3');
+    });
+
+    it('debe convertir piezas a figurine en explicación básica', () => {
+      const errorCaballo: ErrorDetectado = {
+        ...errorEjemplo,
+        jugadaRealizada: {
+          ...errorEjemplo.jugadaRealizada,
+          jugadaSAN: 'Nxd5'
+        },
+        mejorJugadaSAN: 'Bb5+'
+      };
+
+      const explicación = generador.generarExplicaciónBásica(errorCaballo);
+      expect(explicación).toContain('♞xd5');
+      expect(explicación).toContain('♝b5+');
     });
   });
 });

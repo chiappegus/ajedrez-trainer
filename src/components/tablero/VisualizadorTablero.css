@@ -1,0 +1,118 @@
+.visualizador-tablero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.visualizador-tablero__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.visualizador-tablero__titulo {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.visualizador-tablero__evaluacion {
+  font-family: var(--mono);
+  font-size: 18px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+
+.visualizador-tablero__contenedor {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.visualizador-tablero__controles {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.visualizador-tablero__boton {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 18px;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+  color: var(--text-h);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.visualizador-tablero__boton:hover:not(:disabled) {
+  background-color: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.visualizador-tablero__boton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.visualizador-tablero__boton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.visualizador-tablero__boton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.visualizador-tablero__contador {
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--text);
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+/* Modo explicación */
+.visualizador-tablero[data-modo='explicación'] .visualizador-tablero__titulo {
+  font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .visualizador-tablero__titulo {
+    font-size: 18px;
+  }
+
+  .visualizador-tablero__evaluacion {
+    font-size: 16px;
+  }
+
+  .visualizador-tablero__boton {
+    min-width: 40px;
+    min-height: 40px;
+    padding: 6px 10px;
+    font-size: 16px;
+  }
+
+  .visualizador-tablero__contador {
+    font-size: 14px;
+  }
+}

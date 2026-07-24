@@ -47,6 +47,7 @@ export function ConfiguracionCredenciales({ onGuardadoExitoso }: ConfiguracionCr
       // Crear objeto de credenciales
       const credenciales: Credenciales = {
         nombreUsuario: nombreUsuario.trim(),
+        username: nombreUsuario.trim(), // Mismo valor para compatibilidad
         tokenLichess: tokenLichess.trim(),
         apiKeyGroq: apiKeyGroq.trim()
       };
@@ -71,11 +72,40 @@ export function ConfiguracionCredenciales({ onGuardadoExitoso }: ConfiguracionCr
         return;
       }
 
+      // Validar API key de Groq con una petición mínima
+      try {
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/models', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${credenciales.apiKeyGroq}`,
+          },
+          signal: AbortSignal.timeout(10000),
+        });
+
+        if (!groqResponse.ok) {
+          if (groqResponse.status === 401) {
+            setMensajeError('La API Key de Groq es inválida. Verifica que la hayas copiado correctamente.');
+          } else {
+            setMensajeError(`Error validando Groq API: ${groqResponse.status}`);
+          }
+          setValidando(false);
+          return;
+        }
+      } catch (groqError) {
+        if (groqError instanceof Error && groqError.name === 'TimeoutError') {
+          setMensajeError('La validación de Groq tardó demasiado. Verifica tu conexión.');
+        } else {
+          setMensajeError('No se pudo conectar con Groq. Verifica tu conexión a internet.');
+        }
+        setValidando(false);
+        return;
+      }
+
       // Guardar credenciales
       gestorCredenciales.guardarCredenciales(credenciales);
       
       // Mostrar mensaje de éxito
-      setMensajeExito('Token validado correctamente. Credenciales guardadas exitosamente.');
+      setMensajeExito('Tokens de Lichess y Groq validados correctamente. Credenciales guardadas.');
       
       // Llamar al callback si existe
       if (onGuardadoExitoso) {
@@ -214,7 +244,7 @@ export function ConfiguracionCredenciales({ onGuardadoExitoso }: ConfiguracionCr
             className="btn btn-primary"
             disabled={validando}
           >
-            {validando ? 'Validando token...' : 'Guardar credenciales'}
+            {validando ? 'Validando tokens...' : 'Guardar credenciales'}
           </button>
 
           <button

@@ -10,6 +10,8 @@
 export interface Credenciales {
   /** Nombre de usuario de Lichess */
   nombreUsuario: string;
+  /** Nombre de usuario de Lichess (alias para compatibilidad) */
+  username: string;
   /** Token de API Personal de Lichess (debe empezar con 'lip_') */
   tokenLichess: string;
   /** Clave de API de Groq para generar explicaciones con IA */

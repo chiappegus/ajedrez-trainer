@@ -6,7 +6,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EvaluadorJugadas } from './EvaluadorJugadas';
-import type { MotorStockfish, ResultadoAnálisisStockfish } from '../stockfish/MotorStockfish';
+import type { MotorStockfish, ResultadoAnalisisStockfish } from '../stockfish/MotorStockfish';
 import type { Evaluación } from '../../types/evaluacion';
 
 // Mock del MotorStockfish
@@ -14,7 +14,7 @@ const crearMotorMock = (): MotorStockfish => {
   return {
     inicializar: vi.fn().mockResolvedValue(undefined),
     detener: vi.fn(),
-    analizarPosición: vi.fn()
+    analizarPosicion: vi.fn()
   } as unknown as MotorStockfish;
 };
 
@@ -27,7 +27,7 @@ describe('EvaluadorJugadas', () => {
     evaluador = new EvaluadorJugadas(motor);
   });
 
-  describe('Constructor y configuración', () => {
+  describe('Constructor y configuracion', () => {
     it('debe crear instancia con motor Stockfish', () => {
       expect(evaluador).toBeDefined();
       expect(evaluador.obtenerProfundidad()).toBe(15);
@@ -44,12 +44,12 @@ describe('EvaluadorJugadas', () => {
       expect(evaluador.obtenerProfundidad()).toBe(20);
     });
 
-    it('debe aceptar profundidad mínima de 1', () => {
+    it('debe aceptar profundidad minima de 1', () => {
       evaluador.establecerProfundidad(1);
       expect(evaluador.obtenerProfundidad()).toBe(1);
     });
 
-    it('debe aceptar profundidad máxima de 30', () => {
+    it('debe aceptar profundidad maxima de 30', () => {
       evaluador.establecerProfundidad(30);
       expect(evaluador.obtenerProfundidad()).toBe(30);
     });
@@ -66,18 +66,18 @@ describe('EvaluadorJugadas', () => {
   });
 
   describe('evaluarPosición', () => {
-    it('debe evaluar posición y construir objeto Evaluación', async () => {
+    it('debe evaluar posicion y construir objeto Evaluacion', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
         mejorJugadaSAN: 'e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15,
         nodos: 100000,
         tiempo: 1000
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       const evaluación = await evaluador.evaluarPosición(fen);
 
@@ -91,50 +91,50 @@ describe('EvaluadorJugadas', () => {
         tiempoEvaluación: expect.any(Number)
       });
 
-      expect(motor.analizarPosición).toHaveBeenCalledWith(fen, 15);
+      expect(motor.analizarPosicion).toHaveBeenCalledWith(fen, 15);
     });
 
     it('debe usar profundidad por defecto si no se especifica', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       await evaluador.evaluarPosición(fen);
 
-      expect(motor.analizarPosición).toHaveBeenCalledWith(fen, 15);
+      expect(motor.analizarPosicion).toHaveBeenCalledWith(fen, 15);
     });
 
     it('debe usar profundidad especificada si se proporciona', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 20
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       await evaluador.evaluarPosición(fen, 20);
 
-      expect(motor.analizarPosición).toHaveBeenCalledWith(fen, 20);
+      expect(motor.analizarPosicion).toHaveBeenCalledWith(fen, 20);
     });
 
     it('debe manejar evaluaciones de mate', async () => {
       const fen = 'k7/8/8/8/8/8/8/R3K2R w KQ - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'a1a8',
         mejorJugadaSAN: 'Ra8#',
-        evaluación: 10000,
+        evaluacion: 10000,
         mate: 1,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       const evaluación = await evaluador.evaluarPosición(fen);
 
@@ -144,28 +144,28 @@ describe('EvaluadorJugadas', () => {
 
     it('debe usar mejorJugada como fallback si no hay mejorJugadaSAN', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       const evaluación = await evaluador.evaluarPosición(fen);
 
       expect(evaluación.mejorJugadaSAN).toBe('e2e4');
     });
 
-    it('debe registrar tiempo de evaluación', async () => {
+    it('debe registrar tiempo de evaluacion', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       const evaluación = await evaluador.evaluarPosición(fen);
 
@@ -182,13 +182,13 @@ describe('EvaluadorJugadas', () => {
         'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2'
       ];
 
-      const resultadosMotor: ResultadoAnálisisStockfish[] = [
-        { mejorJugada: 'e2e4', evaluación: 25, profundidad: 15 },
-        { mejorJugada: 'e7e5', evaluación: -25, profundidad: 15 },
-        { mejorJugada: 'g1f3', evaluación: 30, profundidad: 15 }
+      const resultadosMotor: ResultadoAnalisisStockfish[] = [
+        { mejorJugada: 'e2e4', evaluacion: 25, profundidad: 15 },
+        { mejorJugada: 'e7e5', evaluacion: -25, profundidad: 15 },
+        { mejorJugada: 'g1f3', evaluacion: 30, profundidad: 15 }
       ];
 
-      vi.mocked(motor.analizarPosición)
+      vi.mocked(motor.analizarPosicion)
         .mockResolvedValueOnce(resultadosMotor[0])
         .mockResolvedValueOnce(resultadosMotor[1])
         .mockResolvedValueOnce(resultadosMotor[2]);
@@ -199,23 +199,23 @@ describe('EvaluadorJugadas', () => {
       expect(evaluaciones[0].fen).toBe(fens[0]);
       expect(evaluaciones[1].fen).toBe(fens[1]);
       expect(evaluaciones[2].fen).toBe(fens[2]);
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(3);
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(3);
     });
 
-    it('debe retornar array vacío para secuencia vacía', async () => {
+    it('debe retornar array vacio para secuencia vacia', async () => {
       const evaluaciones = await evaluador.evaluarSecuencia([]);
       expect(evaluaciones).toEqual([]);
     });
 
-    it('debe manejar secuencia de una sola posición', async () => {
+    it('debe manejar secuencia de una sola posicion', async () => {
       const fens = ['rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'];
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       const evaluaciones = await evaluador.evaluarSecuencia(fens);
 
@@ -225,14 +225,14 @@ describe('EvaluadorJugadas', () => {
 
     it('debe procesar posiciones secuencialmente', async () => {
       const fens = ['fen1', 'fen2', 'fen3'];
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
       const ordenLlamadas: string[] = [];
-      vi.mocked(motor.analizarPosición).mockImplementation(async (fen: string) => {
+      vi.mocked(motor.analizarPosicion).mockImplementation(async (fen: string) => {
         ordenLlamadas.push(fen);
         return resultadoMotor;
       });
@@ -243,165 +243,165 @@ describe('EvaluadorJugadas', () => {
     });
   });
 
-  describe('Integración configuración y evaluación', () => {
-    it('debe usar profundidad configurada en evaluación', async () => {
+  describe('Integracion configuracion y evaluacion', () => {
+    it('debe usar profundidad configurada en evaluacion', async () => {
       evaluador.establecerProfundidad(20);
 
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 20
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       await evaluador.evaluarPosición(fen);
 
-      expect(motor.analizarPosición).toHaveBeenCalledWith(fen, 20);
+      expect(motor.analizarPosicion).toHaveBeenCalledWith(fen, 20);
     });
 
     it('debe poder cambiar profundidad entre evaluaciones', async () => {
       const fen1 = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
       const fen2 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       // Evaluar con profundidad 15
       await evaluador.evaluarPosición(fen1);
-      expect(motor.analizarPosición).toHaveBeenCalledWith(fen1, 15);
+      expect(motor.analizarPosicion).toHaveBeenCalledWith(fen1, 15);
 
-      // Cambiar profundidad y evaluar una posición diferente
+      // Cambiar profundidad y evaluar una posicion diferente
       evaluador.establecerProfundidad(25);
       await evaluador.evaluarPosición(fen2);
-      expect(motor.analizarPosición).toHaveBeenCalledWith(fen2, 25);
+      expect(motor.analizarPosicion).toHaveBeenCalledWith(fen2, 25);
     });
   });
 
-  describe('Caché de evaluaciones', () => {
-    it('debe reutilizar evaluación cacheada para la misma posición', async () => {
+  describe('Cache de evaluaciones', () => {
+    it('debe reutilizar evaluacion cacheada para la misma posicion', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
-      // Primera evaluación - debe llamar al motor
+      // Primera evaluacion - debe llamar al motor
       const eval1 = await evaluador.evaluarPosición(fen);
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(1);
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(1);
 
-      // Segunda evaluación de la misma posición - debe usar caché
+      // Segunda evaluacion de la misma posicion - debe usar cache
       const eval2 = await evaluador.evaluarPosición(fen);
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(1); // No debe llamar al motor otra vez
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(1); // No debe llamar al motor otra vez
 
-      // Ambas evaluaciones deben ser idénticas
+      // Ambas evaluaciones deben ser identicas
       expect(eval2).toEqual(eval1);
     });
 
-    it('debe evaluar posiciones diferentes sin usar caché', async () => {
+    it('debe evaluar posiciones diferentes sin usar cache', async () => {
       const fen1 = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
       const fen2 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
       
-      const resultado1: ResultadoAnálisisStockfish = {
+      const resultado1: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
       
-      const resultado2: ResultadoAnálisisStockfish = {
+      const resultado2: ResultadoAnalisisStockfish = {
         mejorJugada: 'e7e5',
-        evaluación: -20,
+        evaluacion: -20,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición)
+      vi.mocked(motor.analizarPosicion)
         .mockResolvedValueOnce(resultado1)
         .mockResolvedValueOnce(resultado2);
 
       await evaluador.evaluarPosición(fen1);
       await evaluador.evaluarPosición(fen2);
 
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(2);
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(2);
     });
 
-    it('debe usar caché en evaluarSecuencia para posiciones repetidas', async () => {
+    it('debe usar cache en evaluarSecuencia para posiciones repetidas', async () => {
       const fen1 = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
       const fen2 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1';
       
       // Secuencia con posiciones repetidas
       const fens = [fen1, fen2, fen1, fen2];
 
-      const resultado1: ResultadoAnálisisStockfish = {
+      const resultado1: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
       
-      const resultado2: ResultadoAnálisisStockfish = {
+      const resultado2: ResultadoAnalisisStockfish = {
         mejorJugada: 'e7e5',
-        evaluación: -20,
+        evaluacion: -20,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición)
+      vi.mocked(motor.analizarPosicion)
         .mockResolvedValueOnce(resultado1)
         .mockResolvedValueOnce(resultado2);
 
       const evaluaciones = await evaluador.evaluarSecuencia(fens);
 
-      // Solo debe llamar 2 veces al motor (una por cada posición única)
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(2);
+      // Solo debe llamar 2 veces al motor (una por cada posicion unica)
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(2);
       expect(evaluaciones).toHaveLength(4);
       
-      // Las evaluaciones repetidas deben ser idénticas
+      // Las evaluaciones repetidas deben ser identicas
       expect(evaluaciones[0]).toEqual(evaluaciones[2]);
       expect(evaluaciones[1]).toEqual(evaluaciones[3]);
     });
 
-    it('debe limpiar el caché correctamente', async () => {
+    it('debe limpiar el cache correctamente', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
-      // Primera evaluación
+      // Primera evaluacion
       await evaluador.evaluarPosición(fen);
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(1);
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(1);
 
-      // Limpiar caché
+      // Limpiar cache
       evaluador.limpiarCache();
 
-      // Segunda evaluación debe llamar al motor nuevamente
+      // Segunda evaluacion debe llamar al motor nuevamente
       await evaluador.evaluarPosición(fen);
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(2);
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(2);
     });
 
-    it('debe proporcionar estadísticas del caché', async () => {
+    it('debe proporcionar estadisticas del cache', async () => {
       const statsInicial = evaluador.obtenerEstadisticasCache();
       expect(statsInicial.tamaño).toBe(0);
       expect(statsInicial.utilizacion).toBe(0);
 
       const fen1 = 'fen1';
       const fen2 = 'fen2';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       await evaluador.evaluarPosición(fen1);
       await evaluador.evaluarPosición(fen2);
@@ -411,33 +411,33 @@ describe('EvaluadorJugadas', () => {
       expect(statsDespues.utilizacion).toBeGreaterThan(0);
     });
 
-    it('debe crear caché con límite personalizado', () => {
+    it('debe crear cache con limite personalizado', () => {
       const evaluadorCustom = new EvaluadorJugadas(motor, 500);
       const stats = evaluadorCustom.obtenerEstadisticasCache();
       expect(stats.limite).toBe(500);
     });
 
-    it('debe mantener caché después de cambiar profundidad', async () => {
+    it('debe mantener cache despues de cambiar profundidad', async () => {
       const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-      const resultadoMotor: ResultadoAnálisisStockfish = {
+      const resultadoMotor: ResultadoAnalisisStockfish = {
         mejorJugada: 'e2e4',
-        evaluación: 25,
+        evaluacion: 25,
         profundidad: 15
       };
 
-      vi.mocked(motor.analizarPosición).mockResolvedValue(resultadoMotor);
+      vi.mocked(motor.analizarPosicion).mockResolvedValue(resultadoMotor);
 
       // Evaluar con profundidad 15
       await evaluador.evaluarPosición(fen);
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(1);
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(1);
 
       // Cambiar profundidad
       evaluador.establecerProfundidad(20);
 
-      // Re-evaluar la misma posición debe usar caché
+      // Re-evaluar la misma posicion debe usar cache
       // (aunque la profundidad sea diferente, la clave es el FEN)
       await evaluador.evaluarPosición(fen);
-      expect(motor.analizarPosición).toHaveBeenCalledTimes(1);
+      expect(motor.analizarPosicion).toHaveBeenCalledTimes(1);
     });
   });
 });

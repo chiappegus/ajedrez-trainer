@@ -4,4 +4,4 @@
  */
 
 export { MotorStockfish } from './MotorStockfish';
-export type { ResultadoAnálisisStockfish } from './MotorStockfish';
+export type { ResultadoAnalisisStockfish } from './MotorStockfish';

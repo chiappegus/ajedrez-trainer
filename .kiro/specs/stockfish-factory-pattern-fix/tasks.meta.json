@@ -1,0 +1,137 @@
+{
+  "pbtResults": {
+    "1. Write bug condition exploration test": {
+      "status": "passed",
+      "failingExample": "Counterexample successfully captured:\n- Error Type: TypeError\n- Error Message: \"Stockfish is not a constructor\"\n- Bug Location: stockfish-worker.js, inicializarStockfish() function\n- Buggy Pattern: stockfish = new self.Stockfish()\n- Correct Pattern: stockfish = self.Stockfish()\n\nThe test demonstrates that:\n1. Using `new Stockfish()` throws TypeError \"Stockfish is not a constructor\"\n2. Using `new self.Stockfish()` in worker context throws the same error\n3. The bug prevents worker initialization and UCI communication\n4. The correct factory pattern `Stockfish()` without `new` works successfully\n\nAll 7 test assertions passed, confirming the bug exists and validating our hypothesis about the root cause (factory function being incorrectly called as a constructor).",
+      "lastRunTimestamp": 1784784625211
+    }
+  },
+  "executionHistory": {
+    "1. Write bug condition exploration test": [
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784453294
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784463430
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784642142
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784453495
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784646790
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784844312
+      }
+    ],
+    "3.1 Remove `new` keyword from Stockfish instantiation in stockfish-worker.js": [
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784453692
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784853944
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784990961
+      }
+    ],
+    "3.2 Add TypeScript documentation to prevent future constructor usage": [
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784453924
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784855394
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784991951
+      }
+    ],
+    "3.3 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784454147
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784997045
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784785081800
+      }
+    ],
+    "3.4 Verify preservation tests still pass": [
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784454327
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784998044
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784785082715
+      }
+    ],
+    "4. Integration testing and checkpoint": [
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784784454511
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784785088179
+      },
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784785458031
+      }
+    ],
+    "3. Fix Stockfish factory pattern instantiation": [
+      {
+        "executionId": "afba6a53-f13b-46cc-a7eb-27439f24e6fd",
+        "chatSessionId": "sess_1018ed30-72ba-441d-b3f2-0dc9db910eaa",
+        "timestamp": 1784785082898
+      }
+    ]
+  }
+}

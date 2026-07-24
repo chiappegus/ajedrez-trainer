@@ -197,16 +197,28 @@ function inicializarStockfish(): void {
   try {
     // Cargar Stockfish.js desde el directorio público
     // El archivo debe estar en /public/stockfish/stockfish.js
-    importScripts('/stockfish/stockfish.js');
+    importScripts('/stockfish/stockfish.wasm.js');
     
-    // Crear instancia del worker de Stockfish
-    // WASM worker debe estar en /public/stockfish/stockfish.wasm.js
-    stockfish = new Worker('/stockfish/stockfish.wasm.js');
+    // Crear instancia de Stockfish directamente desde la función global cargada
+    // stockfish.js expone una función global Stockfish() o STOCKFISH()
+    // @ts-ignore - Stockfish se carga como función global
+    const StockfishFactory = (self as any).Stockfish || (self as any).STOCKFISH;
+    
+    if (!StockfishFactory) {
+      enviarMensaje({
+        tipo: 'error',
+        error: 'Stockfish no se cargó correctamente desde stockfish.js. Verifica que el archivo esté en /public/stockfish/'
+      });
+      return;
+    }
+    
+    // Crear instancia de Stockfish como worker
+    stockfish = StockfishFactory() as Worker;
     
     if (!stockfish) {
       enviarMensaje({
         tipo: 'error',
-        error: 'No se pudo crear el worker de Stockfish'
+        error: 'No se pudo crear la instancia de Stockfish'
       });
       return;
     }

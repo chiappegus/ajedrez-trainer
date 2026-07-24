@@ -23,6 +23,7 @@ const CONFIG_PBT = {
 const generadorCredenciales = (): fc.Arbitrary<Credenciales> => 
   fc.record({
     nombreUsuario: fc.stringMatching(/^[a-zA-Z0-9_-]{3,20}$/),
+    username: fc.stringMatching(/^[a-zA-Z0-9_-]{3,20}$/),
     tokenLichess: fc.string({ minLength: 20, maxLength: 50 })
       .map(s => `lip_${s}`),
     apiKeyGroq: fc.string({ minLength: 30, maxLength: 60 })

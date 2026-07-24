@@ -36,6 +36,8 @@ export interface Evaluación {
 export interface ResultadoAnálisis {
   /** Objeto de la partida analizada */
   partida: Partida;
+  /** Color con el que jugó el usuario ('white' | 'black') */
+  colorJugador: 'white' | 'black';
   /** Lista de errores significativos detectados */
   erroresDetectados: ErrorDetectado[];
   /** Pérdida promedio en centipawns a lo largo de la partida */

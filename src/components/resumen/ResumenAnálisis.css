@@ -1,0 +1,382 @@
+/**
+ * Estilos para ResumenAnálisis
+ * Feature: lichess-game-analysis
+ */
+
+.resumen-analisis {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.resumen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+/* Color del jugador */
+.color-jugador {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+.resumen-titulo {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.resumen-insignia {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.resumen-insignia[data-rendimiento='excelente'] {
+  background-color: #ffd700;
+  color: #2c3e50;
+}
+
+.resumen-insignia[data-rendimiento='sólido'] {
+  background-color: #4caf50;
+  color: #ffffff;
+}
+
+.resumen-insignia[data-rendimiento='aceptable'] {
+  background-color: #ff9800;
+  color: #ffffff;
+}
+
+.resumen-insignia[data-rendimiento='mejorable'] {
+  background-color: #f44336;
+  color: #ffffff;
+}
+
+.insignia-emoji {
+  font-size: 1.5rem;
+}
+
+/* Sin errores - mensaje de felicitación */
+.resumen-sin-errores {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: #ffffff;
+  margin-bottom: 2rem;
+}
+
+.sin-errores-icono {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.sin-errores-titulo {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+}
+
+.sin-errores-mensaje {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.sin-errores-submensaje {
+  font-size: 1rem;
+  opacity: 0.95;
+  margin: 0 0 1rem 0;
+}
+
+.sin-errores-submensaje strong {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.sin-errores-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.badge-emoji {
+  font-size: 1.5rem;
+}
+
+/* Estadísticas principales */
+.resumen-estadisticas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.estadistica-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.estadistica-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.estadistica-icono {
+  font-size: 2.5rem;
+}
+
+.estadistica-contenido {
+  flex: 1;
+}
+
+.estadistica-valor {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1.2;
+}
+
+.estadistica-label {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Secciones */
+.resumen-seccion {
+  margin-bottom: 2rem;
+}
+
+.seccion-titulo {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+/* Distribución de errores */
+.distribucion-errores {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.distribucion-item {
+  display: grid;
+  grid-template-columns: 100px 1fr 100px;
+  align-items: center;
+  gap: 1rem;
+}
+
+.distribucion-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.color-blancas {
+  font-size: 1.2rem;
+}
+
+.color-negras {
+  font-size: 1.2rem;
+}
+
+.distribucion-barra {
+  width: 100%;
+  height: 30px;
+  background-color: #e0e0e0;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.distribucion-relleno {
+  height: 100%;
+  transition: width 0.5s ease-out;
+}
+
+.distribucion-relleno.blancas {
+  background: linear-gradient(90deg, #ffffff 0%, #e0e0e0 100%);
+}
+
+.distribucion-relleno.negras {
+  background: linear-gradient(90deg, #424242 0%, #000000 100%);
+}
+
+.distribucion-valor {
+  text-align: right;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Mayor pérdida */
+.mayor-perdida-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  border-radius: 8px;
+  color: #ffffff;
+}
+
+.mayor-perdida-info {
+  flex: 1;
+}
+
+.mayor-perdida-valor {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.mayor-perdida-label {
+  font-size: 1rem;
+  opacity: 0.95;
+}
+
+.btn-navegar {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  font-weight: 600;
+}
+
+.btn-navegar:hover {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Interpretación */
+.interpretacion-card {
+  padding: 1.5rem;
+  background-color: #f0f8ff;
+  border-left: 4px solid #3498db;
+  border-radius: 4px;
+}
+
+.interpretacion-texto {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #2c3e50;
+}
+
+/* Acciones */
+.resumen-acciones {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e0e0e0;
+  text-align: center;
+}
+
+.resumen-acciones .btn {
+  min-width: 250px;
+  font-size: 1.1rem;
+  padding: 0.75rem 2rem;
+}
+
+.resumen-sugerencia {
+  margin-top: 1rem;
+  color: #7f8c8d;
+  font-size: 0.95rem;
+}
+
+/* Animación fade-in */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .resumen-analisis {
+    padding: 1rem;
+  }
+
+  .resumen-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .resumen-titulo {
+    font-size: 1.5rem;
+  }
+
+  .resumen-estadisticas {
+    grid-template-columns: 1fr;
+  }
+
+  .distribucion-item {
+    grid-template-columns: 80px 1fr 80px;
+    gap: 0.5rem;
+  }
+
+  .mayor-perdida-card {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .resumen-acciones .btn {
+    min-width: 100%;
+  }
+
+  .sin-errores-icono {
+    font-size: 3rem;
+  }
+
+  .sin-errores-titulo {
+    font-size: 1.5rem;
+  }
+}

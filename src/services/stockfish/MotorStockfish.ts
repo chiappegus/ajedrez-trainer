@@ -1,40 +1,38 @@
-/**
+﻿/**
  * MotorStockfish - Wrapper para Stockfish.js con soporte de Web Workers
  * 
- * Gestiona la comunicación con Stockfish ejecutándose en un Web Worker
+ * Gestiona la comunicacion con Stockfish ejecutandose en un Web Worker
  * usando el protocolo UCI (Universal Chess Interface).
  * 
  * Feature: lichess-game-analysis
  * Valida: Requisito 3.1, 3.3, 3.5, 10.5
  */
 
-import type { MensajeHaciaTrabajador, MensajeDesdeWorker } from './stockfish-worker';
-
 /**
- * Resultado del análisis de una posición por Stockfish
+ * Resultado del analisis de una posicion por Stockfish
  */
-export interface ResultadoAnálisisStockfish {
+export interface ResultadoAnalisisStockfish {
   /** Mejor jugada en formato UCI (ej: "e2e4") */
   mejorJugada: string;
   /** Mejor jugada en formato SAN (ej: "e4") - opcional */
   mejorJugadaSAN?: string;
-  /** Evaluación en centipawns (positivo = ventaja blancas) */
-  evaluación: number;
-  /** Número de jugadas hasta mate (si aplica) */
+  /** Evaluacion en centipawns (positivo = ventaja blancas) */
+  evaluacion: number;
+  /** Numero de jugadas hasta mate (si aplica) */
   mate?: number;
-  /** Profundidad de análisis alcanzada */
+  /** Profundidad de analisis alcanzada */
   profundidad: number;
-  /** Número de nodos analizados */
+  /** Numero de nodos analizados */
   nodos?: number;
-  /** Tiempo de análisis en milisegundos */
+  /** Tiempo de analisis en milisegundos */
   tiempo?: number;
 }
 
 /**
- * Promesa pendiente para análisis
+ * Promesa pendiente para analisis
  */
 interface PromesaPendiente {
-  resolve: (resultado: ResultadoAnálisisStockfish) => void;
+  resolve: (resultado: ResultadoAnalisisStockfish) => void;
   reject: (error: Error) => void;
   tiempoInicio: number;
 }
@@ -42,17 +40,24 @@ interface PromesaPendiente {
 /**
  * Clase wrapper para el motor Stockfish con Web Worker
  * 
- * Gestiona la comunicación asíncrona con Stockfish ejecutándose en
- * un Web Worker separado para evitar bloquear el hilo principal.
+ * Comunica directamente con stockfish.wasm.js via protocolo UCI.
+ * El archivo WASM de Stockfish ES el worker (Emscripten self-contained build).
  */
 export class MotorStockfish {
   private worker: Worker | null = null;
   private inicializado = false;
   private promesaActual: PromesaPendiente | null = null;
   
+  // Estado del analisis actual (parseado de lineas UCI "info")
+  private mejorJugadaActual: string | null = null;
+  private evaluacionActual: number | null = null;
+  private mateActual: number | null = null;
+  private profundidadActual = 0;
+  private nodosActuales = 0;
+
   /**
    * Inicializa el motor Stockfish cargando el Web Worker
-   * @throws Error si la inicialización falla o toma más de 5 segundos
+   * @throws Error si la inicializacion falla o toma mas de 10 segundos
    */
   async inicializar(): Promise<void> {
     if (this.inicializado) {
@@ -61,46 +66,35 @@ export class MotorStockfish {
     
     return new Promise<void>((resolve, reject) => {
       try {
-        // Crear el Web Worker desde el archivo TypeScript
-        // Vite/el bundler se encargará de empaquetar el worker correctamente
-        this.worker = new Worker(
-          new URL('./stockfish-worker.ts', import.meta.url),
-          { type: 'module' }
-        );
-        
-        // Timeout de 5 segundos para inicialización (requisito 3.2)
+        // stockfish.wasm.js ES el worker (Emscripten self-contained build)
+        // Se comunica via UCI: recibe strings, responde strings
+        this.worker = new Worker('/stockfish/stockfish.wasm.js');
+
+        // Timeout de 10 segundos para inicializacion
         const timeoutId = setTimeout(() => {
-          reject(new Error('Timeout inicializando Stockfish (5 segundos)'));
-        }, 5000);
+          reject(new Error('Timeout inicializando Stockfish (10 segundos)'));
+        }, 10000);
         
-        // Manejador de mensajes del worker
-        this.worker.onmessage = (evento: MessageEvent<MensajeDesdeWorker>) => {
-          const mensaje = evento.data;
+        let uciOk = false;
+        
+        // Manejador de mensajes UCI del worker
+        this.worker.onmessage = (evento: MessageEvent) => {
+          const linea: string = evento.data;
           
-          switch (mensaje.tipo) {
-            case 'listo':
+          if (!this.inicializado) {
+            // Fase de inicializacion
+            if (linea === 'uciok') {
+              uciOk = true;
+              this.worker!.postMessage('isready');
+            } else if (linea === 'readyok' && uciOk) {
               clearTimeout(timeoutId);
               this.inicializado = true;
+              // Reasignar handler para fase de analisis
+              this.worker!.onmessage = (ev: MessageEvent) => {
+                this.manejarMensajeUCI(ev.data as string);
+              };
               resolve();
-              break;
-              
-            case 'resultado':
-              this.manejarResultado(mensaje);
-              break;
-              
-            case 'error':
-              if (!this.inicializado) {
-                clearTimeout(timeoutId);
-                reject(new Error(mensaje.error || 'Error desconocido inicializando'));
-              } else {
-                this.manejarError(mensaje.error || 'Error desconocido');
-              }
-              break;
-              
-            case 'info':
-              // Mensajes informativos, se pueden ignorar o loggear
-              console.debug('[Stockfish Worker]', mensaje.mensaje);
-              break;
+            }
           }
         };
         
@@ -108,17 +102,15 @@ export class MotorStockfish {
         this.worker.onerror = (error: ErrorEvent) => {
           clearTimeout(timeoutId);
           if (!this.inicializado) {
-            reject(new Error(`Error en worker: ${error.message}`));
-          } else {
-            this.manejarError(`Error en worker: ${error.message}`);
+            reject(new Error(`Error en worker Stockfish: ${error.message}`));
+          } else if (this.promesaActual) {
+            this.promesaActual.reject(new Error(`Error en worker: ${error.message}`));
+            this.promesaActual = null;
           }
         };
         
-        // Enviar comando de inicialización al worker
-        const mensajeInicializar: MensajeHaciaTrabajador = {
-          tipo: 'inicializar'
-        };
-        this.worker.postMessage(mensajeInicializar);
+        // Iniciar protocolo UCI
+        this.worker.postMessage('uci');
         
       } catch (error) {
         reject(new Error(
@@ -129,100 +121,122 @@ export class MotorStockfish {
   }
   
   /**
-   * Analiza una posición de ajedrez usando Stockfish
-   * 
-   * @param fen Posición en notación FEN
-   * @param profundidad Profundidad de análisis en plies (por defecto 15)
-   * @returns Resultado del análisis con mejor jugada y evaluación
-   * @throws Error si Stockfish no está inicializado o el análisis falla
+   * Maneja mensajes UCI durante la fase de analisis
    */
-  async analizarPosición(
+  private manejarMensajeUCI(linea: string): void {
+    if (!linea || typeof linea !== 'string') return;
+    
+    // Informacion de analisis en progreso
+    if (linea.startsWith('info') && this.promesaActual) {
+      // Extraer evaluacion
+      const matchMate = linea.match(/score mate (-?\d+)/);
+      if (matchMate) {
+        this.mateActual = parseInt(matchMate[1], 10);
+        this.evaluacionActual = this.mateActual > 0 ? 10000 : -10000;
+      } else {
+        const matchCp = linea.match(/score cp (-?\d+)/);
+        if (matchCp) {
+          this.evaluacionActual = parseInt(matchCp[1], 10);
+          this.mateActual = null;
+        }
+      }
+      
+      // Extraer profundidad
+      const matchDepth = linea.match(/depth (\d+)/);
+      if (matchDepth) {
+        this.profundidadActual = parseInt(matchDepth[1], 10);
+      }
+      
+      // Extraer nodos
+      const matchNodes = linea.match(/nodes (\d+)/);
+      if (matchNodes) {
+        this.nodosActuales = parseInt(matchNodes[1], 10);
+      }
+      return;
+    }
+    
+    // Mejor jugada (resultado final del analisis)
+    if (linea.startsWith('bestmove') && this.promesaActual) {
+      const partes = linea.split(' ');
+      this.mejorJugadaActual = partes[1] || null;
+      
+      const tiempoTotal = Date.now() - this.promesaActual.tiempoInicio;
+      
+      if (!this.mejorJugadaActual || this.evaluacionActual === null) {
+        this.promesaActual.reject(
+          new Error('Resultado incompleto de Stockfish')
+        );
+      } else {
+        const resultado: ResultadoAnalisisStockfish = {
+          mejorJugada: this.mejorJugadaActual,
+          evaluacion: this.evaluacionActual,
+          mate: this.mateActual ?? undefined,
+          profundidad: this.profundidadActual,
+          nodos: this.nodosActuales || undefined,
+          tiempo: tiempoTotal
+        };
+        this.promesaActual.resolve(resultado);
+      }
+      
+      // Reset
+      this.promesaActual = null;
+      this.mejorJugadaActual = null;
+      this.evaluacionActual = null;
+      this.mateActual = null;
+      this.profundidadActual = 0;
+      this.nodosActuales = 0;
+    }
+  }
+  
+  /**
+   * Analiza una posicion de ajedrez usando Stockfish
+   * 
+   * @param fen Posicion en notacion FEN
+   * @param profundidad Profundidad de analisis en plies (por defecto 15)
+   * @returns Resultado del analisis con mejor jugada y evaluacion
+   * @throws Error si Stockfish no esta inicializado o el analisis falla
+   */
+  async analizarPosicion(
     fen: string,
     profundidad = 15
-  ): Promise<ResultadoAnálisisStockfish> {
+  ): Promise<ResultadoAnalisisStockfish> {
     if (!this.inicializado || !this.worker) {
-      throw new Error('Stockfish no está inicializado. Llama a inicializar() primero.');
+      throw new Error('Stockfish no esta inicializado. Llama a inicializar() primero.');
     }
     
     if (this.promesaActual !== null) {
-      throw new Error('Ya hay un análisis en progreso. Espera a que termine o llama a detener().');
+      throw new Error('Ya hay un analisis en progreso. Espera a que termine o llama a detener().');
     }
     
-    return new Promise<ResultadoAnálisisStockfish>((resolve, reject) => {
+    return new Promise<ResultadoAnalisisStockfish>((resolve, reject) => {
       this.promesaActual = {
         resolve,
         reject,
         tiempoInicio: Date.now()
       };
       
-      const mensaje: MensajeHaciaTrabajador = {
-        tipo: 'analizar',
-        fen,
-        profundidad
-      };
+      // Reset estado
+      this.mejorJugadaActual = null;
+      this.evaluacionActual = null;
+      this.mateActual = null;
+      this.profundidadActual = 0;
+      this.nodosActuales = 0;
       
-      this.worker!.postMessage(mensaje);
+      // Enviar comandos UCI
+      this.worker!.postMessage(`position fen ${fen}`);
+      this.worker!.postMessage(`go depth ${profundidad}`);
     });
   }
   
   /**
-   * Maneja el resultado exitoso de un análisis
-   */
-  private manejarResultado(mensaje: MensajeDesdeWorker): void {
-    if (!this.promesaActual) {
-      console.warn('Resultado recibido sin promesa pendiente');
-      return;
-    }
-    
-    const tiempoTotal = Date.now() - this.promesaActual.tiempoInicio;
-    
-    // Validar que tenemos los datos mínimos
-    if (!mensaje.mejorJugada || mensaje.evaluación === undefined) {
-      this.promesaActual.reject(
-        new Error('Resultado incompleto de Stockfish: falta mejorJugada o evaluación')
-      );
-      this.promesaActual = null;
-      return;
-    }
-    
-    const resultado: ResultadoAnálisisStockfish = {
-      mejorJugada: mensaje.mejorJugada,
-      evaluación: mensaje.evaluación,
-      mate: mensaje.mate,
-      profundidad: mensaje.profundidad || 0,
-      nodos: mensaje.nodos,
-      tiempo: tiempoTotal
-    };
-    
-    this.promesaActual.resolve(resultado);
-    this.promesaActual = null;
-  }
-  
-  /**
-   * Maneja errores del análisis
-   */
-  private manejarError(mensajeError: string): void {
-    if (this.promesaActual) {
-      this.promesaActual.reject(new Error(mensajeError));
-      this.promesaActual = null;
-    } else {
-      console.error('[MotorStockfish]', mensajeError);
-    }
-  }
-  
-  /**
-   * Detiene el análisis actual y libera recursos
+   * Detiene el analisis actual y libera recursos
    */
   detener(): void {
     if (this.worker) {
-      const mensaje: MensajeHaciaTrabajador = {
-        tipo: 'detener'
-      };
-      this.worker.postMessage(mensaje);
+      this.worker.postMessage('stop');
       
-      // Rechazar promesa pendiente si existe
       if (this.promesaActual) {
-        this.promesaActual.reject(new Error('Análisis detenido manualmente'));
+        this.promesaActual.reject(new Error('Analisis detenido manualmente'));
         this.promesaActual = null;
       }
     }
@@ -230,12 +244,12 @@ export class MotorStockfish {
   
   /**
    * Termina el worker y libera todos los recursos
-   * Debe llamarse cuando ya no se necesite el motor
    */
   terminar(): void {
     this.detener();
     
     if (this.worker) {
+      this.worker.postMessage('quit');
       this.worker.terminate();
       this.worker = null;
     }
@@ -244,21 +258,15 @@ export class MotorStockfish {
   }
   
   /**
-   * Envía un comando UCI personalizado directamente a Stockfish
-   * Útil para configuración avanzada
+   * Envia un comando UCI personalizado directamente a Stockfish
    * 
    * @param comando Comando UCI (ej: "setoption name Hash value 128")
    */
   enviarComandoUCI(comando: string): void {
     if (!this.inicializado || !this.worker) {
-      throw new Error('Stockfish no está inicializado');
+      throw new Error('Stockfish no esta inicializado');
     }
     
-    const mensaje: MensajeHaciaTrabajador = {
-      tipo: 'comando',
-      comando
-    };
-    
-    this.worker.postMessage(mensaje);
+    this.worker.postMessage(comando);
   }
 }
