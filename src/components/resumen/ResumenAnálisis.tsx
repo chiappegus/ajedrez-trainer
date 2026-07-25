@@ -97,7 +97,7 @@ function formatearTiempo(ms: number): string {
  */
 export function ResumenAnálisis({
   resultado,
-  onNavigarAJugada,
+  onNavigarAJugada: _onNavigarAJugada,
   onVerDetalles
 }: ResumenAnálisisProps) {
   const { erroresDetectados, estadísticas, pérdidaPromedioCentipawns, tiempoTotal } = resultado;
@@ -105,15 +105,6 @@ export function ResumenAnálisis({
   const hayErrores = erroresDetectados.length > 0;
   const emojiRendimiento = obtenerEmojiRendimiento(estadísticas.rendimientoGeneral);
   const textoRendimiento = obtenerTextoRendimiento(estadísticas.rendimientoGeneral);
-
-  // Calcular porcentajes para el gráfico de distribución
-  const totalErrores = estadísticas.erroresBlancas + estadísticas.erroresNegras;
-  const porcentajeBlancas = totalErrores > 0
-    ? Math.round((estadísticas.erroresBlancas / totalErrores) * 100)
-    : 0;
-  const porcentajeNegras = totalErrores > 0
-    ? Math.round((estadísticas.erroresNegras / totalErrores) * 100)
-    : 0;
 
   return (
     <div className="resumen-analisis">
@@ -187,73 +178,6 @@ export function ResumenAnálisis({
           </div>
         </div>
       </div>
-
-      {/* Distribución de errores (solo si hay errores) */}
-      {hayErrores && (
-        <div className="resumen-seccion">
-          <h3 className="seccion-titulo">Distribución de Errores</h3>
-          <div className="distribucion-errores">
-            <div className="distribucion-item">
-              <div className="distribucion-label">
-                <span className="color-blancas">⚪</span>
-                Blancas
-              </div>
-              <div className="distribucion-barra">
-                <div
-                  className="distribucion-relleno blancas"
-                  style={{ width: `${porcentajeBlancas}%` }}
-                />
-              </div>
-              <div className="distribucion-valor">
-                {estadísticas.erroresBlancas} ({porcentajeBlancas}%)
-              </div>
-            </div>
-
-            <div className="distribucion-item">
-              <div className="distribucion-label">
-                <span className="color-negras">⚫</span>
-                Negras
-              </div>
-              <div className="distribucion-barra">
-                <div
-                  className="distribucion-relleno negras"
-                  style={{ width: `${porcentajeNegras}%` }}
-                />
-              </div>
-              <div className="distribucion-valor">
-                {estadísticas.erroresNegras} ({porcentajeNegras}%)
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mayor pérdida (solo si hay errores) */}
-      {hayErrores && (
-        <div className="resumen-seccion">
-          <h3 className="seccion-titulo">Mayor Pérdida</h3>
-          <div className="mayor-perdida-card">
-            <div className="mayor-perdida-info">
-              <div className="mayor-perdida-valor">
-                {Math.round(estadísticas.mayorPérdida)} centipawns
-              </div>
-              <div className="mayor-perdida-label">
-                en la jugada {estadísticas.jugadaMayorPérdida}
-              </div>
-            </div>
-            {onNavigarAJugada && (
-              <button
-                type="button"
-                className="btn btn-secondary btn-navegar"
-                onClick={() => onNavigarAJugada(estadísticas.jugadaMayorPérdida)}
-                aria-label={`Navegar a jugada ${estadísticas.jugadaMayorPérdida}`}
-              >
-                🔍 Ver jugada
-              </button>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* Interpretación del rendimiento */}
       <div className="resumen-seccion">

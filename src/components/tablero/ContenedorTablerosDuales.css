@@ -14,7 +14,7 @@
 .contenedor-tableros-duales__tablero {
   flex: 1;
   min-width: 0; /* Permite que flex items se encojan por debajo de su contenido */
-  max-width: 585px;
+  max-width: 527px;
   display: flex;
   justify-content: center;
 }
