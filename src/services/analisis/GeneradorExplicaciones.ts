@@ -17,7 +17,7 @@ REGLAS ESTRICTAS:
 - NO uses letras para las piezas (no escribas N, B, Q, R, K). SIEMPRE usa los simbolos Unicode.
 - Se conciso y preciso. No inventes variantes que no puedas verificar.
 - Habla en segunda persona ("jugaste", "debias", "tu posicion").
-- Responde en castellano argentino informal pero NO uses la palabra "che". Nunca arranques una oración con "che".
+- Responde en español informal, usando segunda persona ("jugaste", "debías", "tu posición"). PROHIBIDO usar la palabra "che" en cualquier parte del texto.
 - Aproximadamente 150-200 palabras.
 
 ESTRUCTURA de tu respuesta:
