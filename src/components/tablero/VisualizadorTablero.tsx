@@ -97,43 +97,11 @@ export const VisualizadorTablero = memo(function VisualizadorTablero({
   orientación = 'white',
   movimientoResaltado,
   tipoResaltado,
-  onCambiarPosición,
   modo = 'partida',
   título,
-  numeroJugada,
-  totalJugadas,
   evaluación,
 }: VisualizadorTableroProps) {
   const estilosResaltado = generarEstilosHighlight(movimientoResaltado, tipoResaltado);
-
-  const handleNavegaciónAnterior = () => {
-    if (numeroJugada !== undefined && numeroJugada > 0 && onCambiarPosición) {
-      onCambiarPosición(numeroJugada - 1);
-    }
-  };
-
-  const handleNavegaciónSiguiente = () => {
-    if (
-      numeroJugada !== undefined &&
-      totalJugadas !== undefined &&
-      numeroJugada < totalJugadas - 1 &&
-      onCambiarPosición
-    ) {
-      onCambiarPosición(numeroJugada + 1);
-    }
-  };
-
-  const handleNavegaciónInicio = () => {
-    if (onCambiarPosición) {
-      onCambiarPosición(0);
-    }
-  };
-
-  const handleNavegaciónFinal = () => {
-    if (totalJugadas !== undefined && onCambiarPosición) {
-      onCambiarPosición(totalJugadas - 1);
-    }
-  };
 
   const formatearEvaluación = (centipawns: number): string => {
     if (Math.abs(centipawns) >= 10000) {
@@ -177,50 +145,6 @@ export const VisualizadorTablero = memo(function VisualizadorTablero({
           }}
         />
       </div>
-
-      {numeroJugada !== undefined && totalJugadas !== undefined && onCambiarPosición && (
-        <div className="visualizador-tablero__controles">
-          <button
-            className="visualizador-tablero__boton"
-            onClick={handleNavegaciónInicio}
-            disabled={numeroJugada === 0}
-            aria-label="Ir al inicio"
-            title="Ir al inicio"
-          >
-            ⏮
-          </button>
-          <button
-            className="visualizador-tablero__boton"
-            onClick={handleNavegaciónAnterior}
-            disabled={numeroJugada === 0}
-            aria-label="Jugada anterior"
-            title="Jugada anterior"
-          >
-            ◀
-          </button>
-          <span className="visualizador-tablero__contador">
-            Jugada {numeroJugada + 1} de {totalJugadas}
-          </span>
-          <button
-            className="visualizador-tablero__boton"
-            onClick={handleNavegaciónSiguiente}
-            disabled={numeroJugada === totalJugadas - 1}
-            aria-label="Jugada siguiente"
-            title="Jugada siguiente"
-          >
-            ▶
-          </button>
-          <button
-            className="visualizador-tablero__boton"
-            onClick={handleNavegaciónFinal}
-            disabled={numeroJugada === totalJugadas - 1}
-            aria-label="Ir al final"
-            title="Ir al final"
-          >
-            ⏭
-          </button>
-        </div>
-      )}
     </div>
   );
 });
