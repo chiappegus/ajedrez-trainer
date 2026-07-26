@@ -79,6 +79,7 @@ export function IndicadorProgreso({
       <div className="progreso-header">
         <h3 className="progreso-titulo">
           {progreso.estado === 'analizando' && '⚙️ Analizando partida...'}
+          {progreso.estado === 'generando_explicaciones' && '🤖 Generando explicaciones con IA...'}
           {progreso.estado === 'pausado' && '⏸️ Análisis pausado'}
           {progreso.estado === 'completado' && '✅ Análisis completado'}
           {progreso.estado === 'error' && '❌ Error en análisis'}

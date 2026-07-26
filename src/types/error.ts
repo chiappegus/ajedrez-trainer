@@ -59,7 +59,7 @@ export interface EstadísticasAnálisis {
  */
 export interface ProgresoAnálisis {
   /** Estado actual del análisis */
-  estado: 'inactivo' | 'analizando' | 'pausado' | 'completado' | 'error';
+  estado: 'inactivo' | 'analizando' | 'pausado' | 'completado' | 'error' | 'generando_explicaciones';
   /** Número de la jugada que se está analizando actualmente */
   jugadaActual: number;
   /** Número total de jugadas a analizar */

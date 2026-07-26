@@ -26,7 +26,7 @@ import type { Partida } from '../../types/partida';
  * Estado interno del analizador
  */
 interface EstadoAnalizador {
-  estado: 'inactivo' | 'analizando' | 'pausado' | 'completado' | 'error';
+  estado: 'inactivo' | 'analizando' | 'pausado' | 'completado' | 'error' | 'generando_explicaciones';
   jugadaActual: number;
   totalJugadas: number;
   evaluaciones: Map<number, Evaluación>;
@@ -138,6 +138,9 @@ export class AnalizadorPartida {
         this.estado.errores.sort((a, b) => b.pérdidaCentipawns - a.pérdidaCentipawns);
         this.estado.errores = this.estado.errores.slice(0, opciones.limiteErrores);
       }
+
+      // Cambiar estado para indicar que estamos generando explicaciones
+      this.estado.estado = 'generando_explicaciones';
 
       // Paso 4: Generar explicaciones para errores detectados
       await this.generarExplicaciones();

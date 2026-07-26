@@ -28,7 +28,7 @@ interface UseAnalisisResult {
   /** Resultado del análisis (disponible cuando estado = 'completado') */
   resultado: ResultadoAnálisis | null;
   /** Estado actual del análisis */
-  estado: 'inactivo' | 'analizando' | 'pausado' | 'completado' | 'error';
+  estado: 'inactivo' | 'analizando' | 'pausado' | 'completado' | 'error' | 'generando_explicaciones';
   /** Mensaje de error si ocurre algún problema */
   error: string | null;
   /** Indica si está en proceso de análisis */
@@ -107,7 +107,7 @@ export function useAnalisis(analizador: AnalizadorPartida | null): UseAnalisisRe
 
   // Obtener estado actual
   const progresoActual = obtenerProgreso();
-  const analizando = progresoActual.estado === 'analizando' || progresoActual.estado === 'pausado';
+  const analizando = progresoActual.estado === 'analizando' || progresoActual.estado === 'pausado' || progresoActual.estado === 'generando_explicaciones';
 
   return {
     iniciarAnalisis,
