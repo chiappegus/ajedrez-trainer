@@ -147,8 +147,6 @@ export class ClienteLichess {
       url += `&perfType=${tipoPartida}`;
     }
     
-    console.log('[DEBUG Lichess] Fetching URL:', url);
-    console.log('[DEBUG Lichess] Token starts with:', this.token.substring(0, 8) + '...');
 
     try {
       const respuesta = await fetch(url, {
@@ -160,8 +158,6 @@ export class ClienteLichess {
         signal: AbortSignal.timeout(15000),
       });
 
-      console.log('[DEBUG Lichess] Response status:', respuesta.status);
-      console.log('[DEBUG Lichess] Response ok:', respuesta.ok);
 
       if (!respuesta.ok) {
         if (respuesta.status === 404) {
@@ -176,10 +172,7 @@ export class ClienteLichess {
         throw new Error(`Error de API de Lichess: ${respuesta.status}`);
       }
 
-      console.log('[DEBUG Lichess] Reading response text...');
       const pgn = await respuesta.text();
-      console.log('[DEBUG Lichess] Response text length:', pgn.length);
-      console.log('[DEBUG Lichess] PGN (first 200 chars):', pgn.substring(0, 200));
 
       const pgnTrimmed = pgn.trim();
 
@@ -187,12 +180,8 @@ export class ClienteLichess {
         throw new Error('No tenés partidas de ese tipo. Probá con otro formato de juego.');
       }
 
-      console.log('[DEBUG Lichess] PGN obtenido exitosamente');
       return pgnTrimmed;
     } catch (error) {
-      console.error('[DEBUG Lichess] FETCH ERROR:', error);
-      console.error('[DEBUG Lichess] Error name:', (error as Error).name);
-      console.error('[DEBUG Lichess] Error message:', (error as Error).message);
       throw error;
     }
   }

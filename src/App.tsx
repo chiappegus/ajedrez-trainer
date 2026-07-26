@@ -166,22 +166,13 @@ function App() {
       setErrorAnalisis(null);
       setVistaActual('analizando');
       Logger.info(`Iniciando análisis para usuario: ${credenciales.username}`);
-      console.log('[DEBUG App] credenciales:', { 
-        username: credenciales.username, 
-        tokenStart: credenciales.tokenLichess.substring(0, 8) + '...',
-        hasGroqKey: !!credenciales.apiKeyGroq 
-      });
-
       // Inicializar dependencias si no están listas
       let analizadorInstance = analizador;
       if (!analizadorInstance) {
         analizadorInstance = await inicializarDependencias();
       }
-      console.log('[DEBUG App] Dependencias inicializadas, analizador creado');
-
       // Iniciar análisis directamente en la instancia
       // (no usar iniciarAnalisis del hook porque el state puede no haberse propagado aún)
-      console.log('[DEBUG App] Llamando iniciarAnálisis con usuario:', credenciales.username);
       const resultadoAnalisis = await analizadorInstance.iniciarAnálisis(credenciales.username, {
         tipoPartida: opciones?.tipoPartida,
         limiteErrores: opciones?.limiteErrores
@@ -201,13 +192,6 @@ function App() {
         setJugadaActual(resultadoAnalisis.erroresDetectados[0].numeroJugada);
       }
     } catch (err) {
-      console.error('[DEBUG App] Error completo:', err);
-      console.error('[DEBUG App] Error tipo:', typeof err);
-      if (err instanceof Error) {
-        console.error('[DEBUG App] Error.name:', err.name);
-        console.error('[DEBUG App] Error.message:', err.message);
-        console.error('[DEBUG App] Stack:', err.stack);
-      }
       Logger.error('Error durante el análisis', err);
       
       let mensajeError: string;

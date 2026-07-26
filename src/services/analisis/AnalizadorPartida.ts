@@ -131,17 +131,13 @@ export class AnalizadorPartida {
       await this.analizarJugadas(partida);
 
       // Paso 3.4: Filtrar solo errores del jugador (no del oponente)
-      console.log('[DEBUG Filtro] Errores ANTES de filtrar por color:', this.estado.errores.length);
       this.estado.errores = this.estado.errores.filter(e => e.turno === colorJugador);
-      console.log('[DEBUG Filtro] Errores DESPUÉS de filtrar por color (' + colorJugador + '):', this.estado.errores.length);
 
       // Paso 3.5: Limitar a los errores más graves
-      console.log('[DEBUG Filtro] opciones.limiteErrores:', opciones?.limiteErrores);
       if (opciones?.limiteErrores && this.estado.errores.length > opciones.limiteErrores) {
         this.estado.errores.sort((a, b) => b.pérdidaCentipawns - a.pérdidaCentipawns);
         this.estado.errores = this.estado.errores.slice(0, opciones.limiteErrores);
       }
-      console.log('[DEBUG Filtro] Errores FINALES que van a Groq:', this.estado.errores.length);
 
       // Cambiar estado para indicar que estamos generando explicaciones
       this.estado.estado = 'generando_explicaciones';
@@ -283,10 +279,8 @@ export class AnalizadorPartida {
    * @private
    */
   private async generarExplicaciones(): Promise<void> {
-    console.log('[DEBUG Groq] Iniciando generación de explicaciones para', this.estado.errores.length, 'errores');
     for (let i = 0; i < this.estado.errores.length; i++) {
       const error = this.estado.errores[i];
-      console.log(`[DEBUG Groq] Generando explicación ${i + 1}/${this.estado.errores.length}...`);
 
       // Verificar si está pausado
       while (this.estado.pausado) {
@@ -301,7 +295,6 @@ export class AnalizadorPartida {
         // Fallback inmediato a explicación básica si Groq falla (no reintentar)
         error.explicación = this.generador.generarExplicaciónBásica(error);
       }
-      console.log(`[DEBUG Groq] Explicación ${i + 1} completada (${error.explicación?.substring(0, 30)}...)`);
 
       // Delay de 2 segundos entre llamadas para evitar rate limit de Groq
       if (i < this.estado.errores.length - 1) {
