@@ -138,6 +138,128 @@ Abrí **http://localhost:5173** en tu navegador. ¡Listo!
 
 ---
 
+## 🏗️ Arquitectura
+
+### Diagrama general del sistema
+
+```mermaid
+flowchart TB
+    subgraph "🌐 Navegador del Usuario"
+        subgraph "UI - React"
+            Config["⚙️ Configuración<br/>Credenciales"]
+            Selector["🎯 Selector<br/>Tipo + Errores"]
+            Progreso["📊 Progreso<br/>Tiempo Real"]
+            Resultado["📋 Resultados<br/>Resumen + Tableros"]
+            Explicacion["💬 Explicaciones<br/>IA + Figurines"]
+        end
+
+        subgraph "Lógica de Negocio"
+            Analizador["🧠 AnalizadorPartida<br/>Orquestador"]
+            Evaluador["⚖️ EvaluadorJugadas<br/>+ Cache"]
+            Detector["🔍 DetectorErrores<br/>≥100cp"]
+            Generador["✍️ GeneradorExplicaciones<br/>Prompt + Figurines"]
+            Parser["📄 ParserPGN<br/>chess.js"]
+        end
+
+        subgraph "Motor de Análisis"
+            Stockfish["♟️ Stockfish WASM<br/>Web Worker UCI"]
+        end
+    end
+
+    subgraph "🌍 APIs Externas"
+        Lichess["♞ Lichess API<br/>PGN Format"]
+        Groq["🤖 Groq API<br/>LLaMA 3.3 70B"]
+    end
+
+    Config --> Analizador
+    Selector --> Analizador
+    Analizador --> Parser
+    Analizador --> Evaluador
+    Analizador --> Detector
+    Analizador --> Generador
+    Evaluador --> Stockfish
+    Analizador --> Lichess
+    Generador --> Groq
+    Analizador --> Progreso
+    Analizador --> Resultado
+    Resultado --> Explicacion
+```
+
+### Flujo de análisis
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 Usuario
+    participant App as ⚛️ React App
+    participant L as ♞ Lichess API
+    participant S as ♟️ Stockfish WASM
+    participant G as 🤖 Groq API
+
+    U->>App: Click "Analizar última partida"
+    App->>L: GET /api/games/user/{user}?max=1<br/>Accept: application/x-chess-pgn
+    L-->>App: PGN de la partida
+
+    App->>App: Parsear PGN → jugadas con FEN
+
+    loop Cada jugada (70 jugadas ~1-4 min)
+        App->>S: position fen {FEN}
+        App->>S: go depth 15
+        S-->>App: info score cp 25 + bestmove e2e4
+        App->>App: Normalizar evaluación<br/>(negras: negar)
+        App->>App: Detectar error si pérdida ≥100cp
+    end
+
+    App->>App: Filtrar solo errores del jugador<br/>Ordenar por gravedad → Top 3/5
+
+    loop Cada error (3-5 errores)
+        App->>G: POST /chat/completions<br/>LLaMA 3.3 70B + prompt figurines
+        G-->>App: Explicación en español (~200 palabras)
+    end
+
+    App->>U: Mostrar resultados<br/>Tableros duales + explicaciones
+```
+
+### Comunicación con Stockfish
+
+```mermaid
+flowchart LR
+    subgraph "Hilo Principal"
+        Motor["MotorStockfish.ts"]
+    end
+
+    subgraph "Web Worker"
+        WASM["stockfish.wasm.js<br/>(Emscripten build)"]
+    end
+
+    Motor -->|"postMessage('uci')"| WASM
+    WASM -->|"'uciok'"| Motor
+    Motor -->|"postMessage('isready')"| WASM
+    WASM -->|"'readyok'"| Motor
+    Motor -->|"postMessage('position fen ...')"| WASM
+    Motor -->|"postMessage('go depth 15')"| WASM
+    WASM -->|"'info depth 15 score cp 25'"| Motor
+    WASM -->|"'bestmove e2e4'"| Motor
+```
+
+### Gestión de credenciales
+
+```mermaid
+flowchart TD
+    Start["App se inicia"] --> Check{"¿Hay credenciales<br/>en localStorage?"}
+    Check -->|Sí| Load["Cargar de localStorage"]
+    Check -->|No| EnvCheck{"¿Hay variables<br/>en .env.local?"}
+    EnvCheck -->|Sí válidas| Save["Guardar en localStorage"]
+    EnvCheck -->|No / inválidas| Form["Mostrar formulario"]
+    Form --> Validate["Validar tokens<br/>Lichess + Groq"]
+    Validate -->|OK| SaveForm["Guardar en localStorage"]
+    Validate -->|Error| Form
+    Load --> App["✅ App lista"]
+    Save --> App
+    SaveForm --> App
+```
+
+---
+
 ## 📁 Estructura del Proyecto
 
 ```
