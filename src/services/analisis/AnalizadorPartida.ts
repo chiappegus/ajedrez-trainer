@@ -279,7 +279,9 @@ export class AnalizadorPartida {
    * @private
    */
   private async generarExplicaciones(): Promise<void> {
-    for (const error of this.estado.errores) {
+    for (let i = 0; i < this.estado.errores.length; i++) {
+      const error = this.estado.errores[i];
+
       // Verificar si está pausado
       while (this.estado.pausado) {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -290,8 +292,13 @@ export class AnalizadorPartida {
         const explicación = await this.generador.generarExplicaciónConcisa(error);
         error.explicación = explicación;
       } catch (err) {
-        // Fallback a explicación básica si Groq falla
+        // Fallback inmediato a explicación básica si Groq falla (no reintentar)
         error.explicación = this.generador.generarExplicaciónBásica(error);
+      }
+
+      // Delay de 2 segundos entre llamadas para evitar rate limit de Groq
+      if (i < this.estado.errores.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
     }
   }

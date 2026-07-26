@@ -4,7 +4,7 @@
  * Valida: Requisitos 0.1.1, 0.1.8, 0.1.10, 0.2.3, 9.1, 9.2, 12.4
  */
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { Chess } from 'chess.js'
 import { ConfiguracionCredenciales } from './components/configuracion/ConfiguracionCredenciales'
 import { IndicadorProgreso } from './components/progreso/IndicadorProgreso'
@@ -20,7 +20,7 @@ import { Logger } from './utils/logger'
 import { obtenerMensajeUsuario } from './utils/errores'
 import type { ErrorAjedrezTrainer } from './utils/errores'
 import type { ResultadoAnálisis } from './types/evaluacion'
-import type { ErrorDetectado } from './types/error'
+import type { ErrorDetectado, ProgresoAnálisis } from './types/error'
 import type { OpcionesAnalisis } from './components/analisis/SelectorAnalisis'
 import './App.css'
 
@@ -44,12 +44,29 @@ function App() {
   const [errorSeleccionado, setErrorSeleccionado] = useState<ErrorDetectado | null>(null);
   const [_mostrandoPanel, setMostrandoPanel] = useState(false);
 
+  // Ref directa al analizador para polling de progreso (evita timing de React state)
+  const analizadorRef = useRef<AnalizadorPartida | null>(null);
+
+  // Obtener progreso directamente del ref (no depende de React state propagation)
+  const obtenerProgresoDirecto = useCallback((): ProgresoAnálisis => {
+    if (!analizadorRef.current) {
+      return {
+        estado: 'inactivo',
+        jugadaActual: 0,
+        totalJugadas: 0,
+        erroresEncontrados: 0,
+        tiempoPromedioPorJugada: 0,
+        tiempoRestanteEstimado: 0
+      };
+    }
+    return analizadorRef.current.obtenerProgreso();
+  }, []);
+
   // Hook useAnalisis (acepta null durante inicialización)
   const {
     iniciarAnalisis,
     pausarAnalisis,
     reanudarAnalisis,
-    obtenerProgreso,
     estado: estadoAnalisis,
   } = useAnalisis(analizador);
 
@@ -127,6 +144,7 @@ function App() {
 
       Logger.info('Analizador de partida inicializado correctamente');
       setAnalizador(nuevoAnalizador);
+      analizadorRef.current = nuevoAnalizador;
       
       return nuevoAnalizador;
     } catch (err) {
@@ -264,6 +282,7 @@ function App() {
     setErrorSeleccionado(null);
     setJugadaActual(0);
     setMostrandoPanel(false);
+    analizadorRef.current = null;
     setVistaActual('principal');
   }, []);
 
@@ -381,7 +400,7 @@ function App() {
 
             <main className="contenido-analisis">
               <IndicadorProgreso
-                obtenerProgreso={obtenerProgreso}
+                obtenerProgreso={obtenerProgresoDirecto}
                 onPausar={pausarAnalisis}
                 onReanudar={reanudarAnalisis}
               />

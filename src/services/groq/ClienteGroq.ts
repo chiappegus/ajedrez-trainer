@@ -150,6 +150,7 @@ export class ClienteGroq {
       // Realizar la petición HTTP POST
       const respuesta = await fetch(GROQ_API_ENDPOINT, {
         method: 'POST',
+        signal: AbortSignal.timeout(15000),
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
           'Content-Type': 'application/json'
