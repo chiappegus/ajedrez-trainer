@@ -222,6 +222,57 @@ export class MotorStockfish {
       this.profundidadActual = 0;
       this.nodosActuales = 0;
       
+      // Timeout de 10 segundos por posicion
+      const timeoutId = setTimeout(() => {
+        // Enviar "stop" para forzar bestmove
+        this.worker?.postMessage('stop');
+        
+        // Si después de 2s más no responde, resolver con datos parciales o rechazar
+        setTimeout(() => {
+          if (this.promesaActual) {
+            if (this.evaluacionActual !== null) {
+              // Tenemos datos parciales - usar lo que tenemos
+              const resultadoParcial: ResultadoAnalisisStockfish = {
+                mejorJugada: this.mejorJugadaActual || 'a1a1',
+                evaluacion: this.evaluacionActual,
+                mate: this.mateActual ?? undefined,
+                profundidad: this.profundidadActual,
+                nodos: this.nodosActuales || undefined,
+                tiempo: Date.now() - this.promesaActual.tiempoInicio
+              };
+              this.promesaActual.resolve(resultadoParcial);
+            } else {
+              // Sin datos - resolver con evaluación neutra para no bloquear
+              this.promesaActual.resolve({
+                mejorJugada: 'a1a1',
+                evaluacion: 0,
+                profundidad: 0,
+                tiempo: Date.now() - this.promesaActual.tiempoInicio
+              });
+            }
+            this.promesaActual = null;
+            this.mejorJugadaActual = null;
+            this.evaluacionActual = null;
+            this.mateActual = null;
+            this.profundidadActual = 0;
+            this.nodosActuales = 0;
+          }
+        }, 2000);
+      }, 10000);
+      
+      // Guardar el timeoutId para limpiarlo si bestmove llega a tiempo
+      const originalResolve = resolve;
+      const originalReject = reject;
+      
+      this.promesaActual.resolve = (resultado) => {
+        clearTimeout(timeoutId);
+        originalResolve(resultado);
+      };
+      this.promesaActual.reject = (error) => {
+        clearTimeout(timeoutId);
+        originalReject(error);
+      };
+      
       // Enviar comandos UCI
       this.worker!.postMessage(`position fen ${fen}`);
       this.worker!.postMessage(`go depth ${profundidad}`);
