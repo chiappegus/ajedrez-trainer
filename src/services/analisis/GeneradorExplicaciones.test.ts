@@ -93,7 +93,7 @@ describe('GeneradorExplicaciones', () => {
   });
 
   describe('generarExplicaciónConcisa', () => {
-    it('debe llamar a ClienteGroq con modelo llama-3.3-70b-versatile', async () => {
+    it('debe llamar a ClienteGroq con modelo openai/gpt-oss-20b', async () => {
       const respuestaMock = {
         choices: [{
           message: {
@@ -111,7 +111,7 @@ describe('GeneradorExplicaciones', () => {
 
       // Verificar parámetros de la llamada
       const llamada = vi.mocked(clienteGroqMock.chatCompletion).mock.calls[0][0];
-      expect(llamada.modelo).toBe('llama-3.3-70b-versatile');
+      expect(llamada.modelo).toBe('openai/gpt-oss-20b');
       expect(llamada.mensajes).toHaveLength(2);
       expect(llamada.mensajes[0].rol).toBe('system');
       expect(llamada.mensajes[1].rol).toBe('user');
@@ -157,7 +157,7 @@ describe('GeneradorExplicaciones', () => {
 
       // Verificar parámetros de la llamada
       const llamada = vi.mocked(clienteGroqMock.chatCompletion).mock.calls[0][0];
-      expect(llamada.modelo).toBe('llama-3.3-70b-versatile');
+      expect(llamada.modelo).toBe('openai/gpt-oss-20b');
       expect(llamada.longitudMáxima).toBe(1200);
       expect(llamada.temperatura).toBe(0.6);
 
