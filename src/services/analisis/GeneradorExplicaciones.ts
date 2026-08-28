@@ -168,7 +168,7 @@ export class GeneradorExplicaciones {
     const prompt = this.construirPrompt(error);
     
     const parametros: ParámetrosChatCompletion = {
-      modelo: 'llama-3.1-8b-instant',
+      modelo: 'groq/compound',
       mensajes: [
         { rol: 'system', contenido: PROMPT_SISTEMA },
         { rol: 'user', contenido: prompt }
@@ -188,7 +188,7 @@ export class GeneradorExplicaciones {
     const prompt = this.construirPromptExtendido(error);
     
     const parametros: ParámetrosChatCompletion = {
-      modelo: 'llama-3.1-8b-instant',
+      modelo: 'groq/compound',
       mensajes: [
         { rol: 'system', contenido: PROMPT_SISTEMA },
         { rol: 'user', contenido: prompt }
