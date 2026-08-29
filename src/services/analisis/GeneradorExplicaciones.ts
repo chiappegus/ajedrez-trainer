@@ -168,13 +168,13 @@ export class GeneradorExplicaciones {
     const prompt = this.construirPrompt(error);
     
     const parametros: ParámetrosChatCompletion = {
-      modelo: 'groq/compound',
+      modelo: 'qwen/qwen3.8-27b',
       mensajes: [
         { rol: 'system', contenido: PROMPT_SISTEMA },
         { rol: 'user', contenido: prompt }
       ],
       longitudMáxima: 800,
-      temperatura: 0.6
+      temperatura: 0.5
     };
 
     const respuesta = await this.clienteGroq.chatCompletion(parametros);
@@ -188,13 +188,13 @@ export class GeneradorExplicaciones {
     const prompt = this.construirPromptExtendido(error);
     
     const parametros: ParámetrosChatCompletion = {
-      modelo: 'groq/compound',
+      modelo: 'qwen/qwen3.8-27b',
       mensajes: [
         { rol: 'system', contenido: PROMPT_SISTEMA },
         { rol: 'user', contenido: prompt }
       ],
       longitudMáxima: 1200,
-      temperatura: 0.6
+      temperatura: 0.5
     };
 
     const respuesta = await this.clienteGroq.chatCompletion(parametros);
